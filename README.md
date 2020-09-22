@@ -15,6 +15,7 @@ Where example.txt contains list of commands
 ## Available Operators
 
 Tester: Run a simulation on circuit with initial state |00...0>, then print the circuit's matrix and final state.
+
 TFinder: Similar to Tester, but only print the circuit's matrix.
 
 ## Available Commands
