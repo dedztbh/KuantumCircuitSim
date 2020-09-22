@@ -35,4 +35,7 @@ AllInit: Similar to Tester, but run for each possible initial state (2^N of them
 - SqrtNot i
 - SqrtNotDag i
 - SqrtSwap i j (Not implemented yet)
-- Measure i (Measure i time on standard basis, not implemented yet)
+- Measure n
+    + Measures the joint qubit state n times using standard basis
+    + Only works when using Tester
+    + Will end command read

@@ -86,7 +86,10 @@ open class TFinder(val N: Int) : Operator {
 //            "SqrtSwap" -> {
 //                TODO: Implement SqrtSwap
 //            }
-            else -> return -1
+            else -> {
+                System.err.println("Unknown command \"$cmd\". Stop reading commands.")
+                return -1
+            }
         }
         opMatrix = newOp * opMatrix
         return 0
