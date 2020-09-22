@@ -8,6 +8,10 @@ import org.ejml.dense.row.CommonOps_ZDRM
  * Created by DEDZTBH on 2020/09/22.
  * Project KuantumCircuitSim
  */
+
+/**
+ * Kronecker product of two ZDRM matrices
+ */
 infix fun ZMatrixRMaj.kron(B: ZMatrixRMaj) = let { A ->
     val numColsC = A.numCols * B.numCols
     val numRowsC = A.numRows * B.numRows
@@ -32,19 +36,26 @@ infix fun ZMatrixRMaj.kron(B: ZMatrixRMaj) = let { A ->
     C
 }
 
+/**
+ * Convenient pure ops
+ */
 operator fun ZMatrixRMaj.plus(B: ZMatrixRMaj) =
     ZMatrixRMaj(numRows, numCols).also { CommonOps_ZDRM.add(this, B, it) }
 
 operator fun ZMatrixRMaj.times(B: ZMatrixRMaj) =
     ZMatrixRMaj(numRows, B.numCols).also { CommonOps_ZDRM.mult(this, B, it) }
 
+
+/**
+ * Useful constants
+ */
 typealias Matrix = ZMatrixRMaj
 typealias Ops = CommonOps_ZDRM
 
-/* 2^(-1/2) */
+/** 2^(-1/2) */
 const val HALF_AMPL = 0.70710678118654757273731092936941422522068023681640625
 
-/* Don't change these constant matrices! */
+/** Don't change these constant matrices! */
 val NOT = Matrix(
     arrayOf(
         doubleArrayOf(0.0, 0.0, 1.0, 0.0),

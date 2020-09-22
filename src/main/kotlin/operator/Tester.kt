@@ -11,17 +11,17 @@ import kotlin.math.pow
 
 class Tester(val N: Int) : Operator {
     val jointStateSize = 2.0.pow(N).toInt()
+    val IN2 = Ops.identity(jointStateSize)
 
     /* 2^N by 1 column vector */
     val jointState =
         Matrix(jointStateSize, 1).apply { set(0, 0, 1.0, 0.0) }
+    var opMatrix = IN2
 
-    val Zero = Matrix(N, N)
-    val IN2 = Ops.identity(jointStateSize)
 
-    /* Control Matrix generation based on this great article:
+    /** Control matrix generation based on this great article:
      * http://www.sakkaris.com/tutorials/quantum_control_gates.html */
-    fun zeroCtrlMatrix(i: Int, mat: Matrix): Matrix {
+    fun get0CtrlMatrix(i: Int, mat: Matrix): Matrix {
         var base0 = I1
         repeat(N) {
             val op =
@@ -33,7 +33,7 @@ class Tester(val N: Int) : Operator {
         return base0
     }
 
-    fun oneCtrlMatrix(i: Int, j: Int, mat: Matrix): Matrix {
+    fun get1CtrlMatrix(i: Int, j: Int, mat: Matrix): Matrix {
         var base0 = I1
         repeat(N) {
             val op = if (it == i) KETBRA0 else I2
@@ -51,43 +51,47 @@ class Tester(val N: Int) : Operator {
         return base0 + base1
     }
 
-    var opMatrix = IN2
+    fun getCCNotMatrix(i: Int, j: Int, k: Int): Matrix {
+        /** using Sleator-Weinfurter construction
+         * matrix is actually reverse order as graph */
+        val cnotij = get1CtrlMatrix(i, j, NOT)
+        return get1CtrlMatrix(i, k, SQRT_NOT) *
+                cnotij *
+                get1CtrlMatrix(j, k, SQRT_NOT_DAG) *
+                cnotij *
+                get1CtrlMatrix(j, k, SQRT_NOT)
+    }
+
 
     override fun runCmd(cmd: String): Int {
         val i = readInt()
         val newOp = when (cmd) {
-            "Not" -> zeroCtrlMatrix(i, NOT)
-            "Hadamard" -> zeroCtrlMatrix(i, H)
-            "CNot" -> oneCtrlMatrix(i, readInt(), NOT)
+            "Not" -> get0CtrlMatrix(i, NOT)
+            "Hadamard" -> get0CtrlMatrix(i, H)
+            "CNot" -> get1CtrlMatrix(i, readInt(), NOT)
             "Swap" -> {
                 /* https://algassert.com/post/1717
                  * Swap implemented with 3 CNots */
                 val j = readInt()
-                val cnot0 = oneCtrlMatrix(i, j, NOT)
-                cnot0 * oneCtrlMatrix(j, i, NOT) * cnot0
+                val cnot0 = get1CtrlMatrix(i, j, NOT)
+                cnot0 * get1CtrlMatrix(j, i, NOT) * cnot0
             }
-            "CCNot" -> {
-                // using Sleator-Weinfurter construction
+            "CCNot" -> getCCNotMatrix(i, readInt(), readInt())
+            "CSwap" -> {
+                /** https://quantumcomputing.stackexchange.com/
+                 * questions/9342/how-to-implement-a-fredkin
+                 * -gate-using-toffoli-and-cnots */
                 val j = readInt()
                 val k = readInt()
-                val cnotij = oneCtrlMatrix(i, j, NOT)
-                // matrix is actually reverse order as graph
-                oneCtrlMatrix(i, k, SQRT_NOT) *
-                        cnotij *
-                        oneCtrlMatrix(j, k, SQRT_NOT_DAG) *
-                        cnotij *
-                        oneCtrlMatrix(j, k, SQRT_NOT)
+                val cnotkj = get1CtrlMatrix(k, j, NOT)
+                cnotkj * getCCNotMatrix(i, j, k) * cnotkj
             }
-//            "CSwap" -> {
-//                TODO: Implement CSwap
-//                Can anyone tell me how to implement CSwap :(
-//            }
-            "Z" -> zeroCtrlMatrix(i, Z)
-            "S" -> zeroCtrlMatrix(i, S)
-            "T" -> zeroCtrlMatrix(i, T)
-            "TDag" -> zeroCtrlMatrix(i, TDag)
-            "SqrtNot" -> zeroCtrlMatrix(i, SQRT_NOT)
-            "SqrtNotDag" -> zeroCtrlMatrix(i, SQRT_NOT_DAG)
+            "Z" -> get0CtrlMatrix(i, Z)
+            "S" -> get0CtrlMatrix(i, S)
+            "T" -> get0CtrlMatrix(i, T)
+            "TDag" -> get0CtrlMatrix(i, TDag)
+            "SqrtNot" -> get0CtrlMatrix(i, SQRT_NOT)
+            "SqrtNotDag" -> get0CtrlMatrix(i, SQRT_NOT_DAG)
 //            "SqrtSwap" -> {
 //                TODO: Implement SqrtSwap
 //            }

@@ -17,14 +17,13 @@ Where example.txt contains list of commands
 Tester: Run a simulation on circuit with initial state |00...0>, then print the circuit's matrix and final state.
 
 ## Available Commands
-I don't know how to implement CSwap yet, I will add it after I found out how :(
 
 - Not i
 - Hadamard i
 - CNot i j
 - Swap i j
 - CCNot i j k
-- CSwap i j k (Not implemented yet)
+- CSwap i j k
 - Z i
 - S i
 - T i
