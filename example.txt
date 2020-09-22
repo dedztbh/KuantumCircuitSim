@@ -1,0 +1,16 @@
+Hadamard 2
+CNot 1 2
+TDag 2
+CNot 0 2
+T 2
+CNot 1 2
+TDag 2
+CNot 0 2
+TDag 1
+T 2
+CNot 0 1
+Hadamard 2
+TDag 1
+CNot 0 1
+T 0
+S 1
