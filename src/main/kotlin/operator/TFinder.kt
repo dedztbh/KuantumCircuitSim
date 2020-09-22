@@ -13,9 +13,6 @@ open class TFinder(val N: Int) : Operator {
     val jointStateSize = 2.0.pow(N).toInt()
     val IN2 = Ops.identity(jointStateSize)
 
-    /** 2^N by 1 column vector */
-    val jointState =
-        Matrix(jointStateSize, 1).apply { set(0, 0, 1.0, 0.0) }
     var opMatrix = IN2
 
     val IKronTable = Array(N + 1) { I1 }.also {

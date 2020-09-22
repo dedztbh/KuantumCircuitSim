@@ -18,6 +18,8 @@ Tester: Run a simulation on circuit with initial state |00...0>, then print the 
 
 TFinder: Similar to Tester, but only print the circuit's matrix.
 
+AllInit: Similar to Tester, but run for each possible initial state (2^N of them).
+
 ## Available Commands
 
 - Not i
@@ -33,3 +35,4 @@ TFinder: Similar to Tester, but only print the circuit's matrix.
 - SqrtNot i
 - SqrtNotDag i
 - SqrtSwap i j (Not implemented yet)
+- Measure i (Measure i time on standard basis, not implemented yet)

@@ -71,6 +71,9 @@ val H = Matrix(
 val I1 = Ops.identity(1)
 val I2 = Ops.identity(2)
 
+val KET0 = Matrix(arrayOf(doubleArrayOf(1.0, 0.0), doubleArrayOf(0.0, 0.0)))
+val KET1 = Matrix(arrayOf(doubleArrayOf(0.0, 0.0), doubleArrayOf(1.0, 0.0)))
+
 val KETBRA0 = Ops.diag(1.0, 0.0, 0.0, 0.0)
 val KETBRA1 = Ops.diag(0.0, 0.0, 1.0, 0.0)
 val SQRT_NOT = Matrix(
