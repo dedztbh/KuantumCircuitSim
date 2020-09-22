@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 group = "com.dedztbh"
-version = "0.5"
+version = "0.6"
 
 val ejmlVersion = "0.39"
 

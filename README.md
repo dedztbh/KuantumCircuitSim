@@ -35,6 +35,8 @@ AllInit: Similar to Tester, but run for each possible initial state (2^N of them
 - SqrtNot i
 - SqrtNotDag i
 - SqrtSwap i j (Not implemented yet)
+- Rot i deg
+    + Rotate qubit clockwise by degree, not rad 
 - Measure n
     + Measures the joint qubit state n times using standard basis
     + Only works when using Tester

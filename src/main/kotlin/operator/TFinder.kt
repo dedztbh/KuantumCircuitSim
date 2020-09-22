@@ -1,7 +1,10 @@
 package operator
 
 import util.*
+import kotlin.math.PI
+import kotlin.math.cos
 import kotlin.math.pow
+import kotlin.math.sin
 
 
 /**
@@ -86,6 +89,18 @@ open class TFinder(val N: Int) : Operator {
 //            "SqrtSwap" -> {
 //                TODO: Implement SqrtSwap
 //            }
+            "Rot" -> {
+                val rad = readDouble() * PI / 180
+                val sine = sin(rad)
+                val cosine = cos(rad)
+                val rotMat = Matrix(
+                    arrayOf(
+                        doubleArrayOf(cosine, 0.0, -sine, 0.0),
+                        doubleArrayOf(sine, 0.0, cosine, 0.0)
+                    )
+                )
+                get0CtrlMatrix(i, rotMat)
+            }
             else -> {
                 System.err.println("Unknown command \"$cmd\". Stop reading commands.")
                 return -1
