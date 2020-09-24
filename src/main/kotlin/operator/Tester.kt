@@ -1,10 +1,7 @@
 package operator
 
 import org.ejml.data.Complex_F64
-import util.Matrix
-import util.readInt
-import util.times
-import util.upperBound
+import util.*
 import kotlin.random.Random
 
 /**
@@ -34,7 +31,7 @@ class Tester(N: Int) : TFinder(N) {
             repeat(i) {
                 val r = Random.nextDouble()
                 val index = probs.upperBound(r)
-                println("|${labels[index].toString(2).run { padStart(N - length + 1, '0') }}>")
+                println(allssr[labels[index]])
             }
             println()
             return 1
@@ -45,6 +42,7 @@ class Tester(N: Int) : TFinder(N) {
     override fun printResult() {
         super.printResult()
         println("\nFinal state: ")
-        (opMatrix * jointState).print()
+        println("Init |${"0".repeat(N)}>")
+        (opMatrix * jointState).printFancy2(allssr = allssr)
     }
 }

@@ -12,38 +12,55 @@ import kotlin.math.sin
  * Project KuantumCircuitSim
  */
 
+fun allStates(n: Int) =
+    Array(2.0.pow(n).toInt()) {
+        IntArray(n) { i -> (it shr i) and 1 }
+    }
+
 open class TFinder(val N: Int) : Operator {
-    val jointStateSize = 2.0.pow(N).toInt()
+    /** all possible states (left-to-right) */
+    val alls = allStates(N)
+
+    /** all possible states represented with ket (right-to-left) */
+    val allssr = alls.map { arr -> "|${arr.reversed().joinToString("")}>" }
+
+    val jointStateSize = alls.size
     val IN2 = Ops.identity(jointStateSize)
 
     var opMatrix = IN2
 
     val IKronTable = Array(N + 1) { I1 }.also {
         for (i in 1..N) {
-            it[i] = I2 kron it[i - 1]
+            it[i] = it[i - 1] kron I2
         }
     }
 
-    fun get0CtrlMatrix(i: Int, mat: Matrix): Matrix =
-        IKronTable[N - i - 1] kron mat kron IKronTable[i]
+    val matrix0CtrlCache = Array(N) { HashMap<Matrix, Matrix>() }
+    fun get0CtrlMatrix(i: Int, mat: Matrix, cache: Boolean = true): Matrix {
+        if (cache) matrix0CtrlCache[i][mat]?.let { return it }
+        val res = IKronTable[i] kron mat kron IKronTable[N - i - 1]
+        if (cache) matrix0CtrlCache[i][mat] = res
+        return res
+    }
+
+    val matrix1CtrlCache = Array(N) { Array(N) { HashMap<Matrix, Matrix>() } }
 
     /** Control matrix generation based on this great article:
      * http://www.sakkaris.com/tutorials/quantum_control_gates.html */
-    val base0Table = Array(N) { i -> get0CtrlMatrix(i, KETBRA0) }
-    fun get1CtrlMatrix(i: Int, j: Int, mat: Matrix): Matrix =
-        base0Table[i] + when {
-            i < j -> IKronTable[N - j - 1] kron
-                    mat kron
+    fun get1CtrlMatrix(i: Int, j: Int, mat: Matrix, cache: Boolean = true): Matrix {
+        if (cache) matrix1CtrlCache[i][j][mat]?.let { return it }
+        val res = get0CtrlMatrix(i, KETBRA0) + when {
+            i < j -> IKronTable[i] kron KETBRA1 kron
                     IKronTable[j - i - 1] kron
-                    KETBRA1 kron
-                    IKronTable[i]
-            i > j -> IKronTable[N - i - 1] kron
-                    KETBRA1 kron
+                    mat kron IKronTable[N - j - 1]
+            i > j -> IKronTable[j] kron mat kron
                     IKronTable[i - j - 1] kron
-                    mat kron
-                    IKronTable[j]
+                    KETBRA1 kron IKronTable[N - i - 1]
             else -> throw IllegalArgumentException("Control qubit is same as affected qubit")
         }
+        if (cache) matrix1CtrlCache[i][j][mat] = res
+        return res
+    }
 
     fun getCCNotMatrix(i: Int, j: Int, k: Int): Matrix {
         /** using Sleator-Weinfurter construction
@@ -54,6 +71,22 @@ open class TFinder(val N: Int) : Operator {
                 get1CtrlMatrix(j, k, SQRT_NOT_DAG) *
                 cnotij *
                 get1CtrlMatrix(j, k, SQRT_NOT)
+
+        /** Alternative implementation:
+         * https://en.wikipedia.org/wiki/Toffoli_gate */
+//        val Hk = get0CtrlMatrix(k, H)
+//        val TDagj = get0CtrlMatrix(j, TDag)
+//        val TDagk = get0CtrlMatrix(k, TDag)
+//        val Ti = get0CtrlMatrix(i, T)
+//        val Tj = get0CtrlMatrix(j, T)
+//        val Tk = get0CtrlMatrix(k, T)
+//        val CNotij = get1CtrlMatrix(i, j, NOT)
+//        val CNotik = get1CtrlMatrix(i, k, NOT)
+//        val CNotjk = get1CtrlMatrix(j, k, NOT)
+//        return CNotij * TDagj * Ti *
+//                Hk * CNotij * Tk * Tj *
+//                CNotik * TDagk * CNotjk *
+//                Tk * CNotik * TDagk * CNotjk * Hk
     }
 
 
@@ -99,7 +132,7 @@ open class TFinder(val N: Int) : Operator {
                         doubleArrayOf(sine, 0.0, cosine, 0.0)
                     )
                 )
-                get0CtrlMatrix(i, rotMat)
+                get0CtrlMatrix(i, rotMat, false)
             }
             else -> {
                 System.err.println("Unknown command \"$cmd\". Stop reading commands.")
@@ -114,4 +147,5 @@ open class TFinder(val N: Int) : Operator {
         println("Transformation: ")
         opMatrix.print()
     }
+
 }

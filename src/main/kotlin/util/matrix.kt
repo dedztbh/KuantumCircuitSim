@@ -1,8 +1,15 @@
 package util
 
+import org.ejml.UtilEjml
 import org.ejml.data.Complex_F64
+import org.ejml.data.MatrixSparse
+import org.ejml.data.MatrixType
 import org.ejml.data.ZMatrixRMaj
 import org.ejml.dense.row.CommonOps_ZDRM
+import org.ejml.ops.MatrixIO
+import java.io.PrintStream
+import java.text.DecimalFormat
+
 
 /**
  * Created by DEDZTBH on 2020/09/22.
@@ -105,4 +112,62 @@ val T = Matrix(
 )
 val TDag = ZMatrixRMaj(2, 2).also {
     Ops.transposeConjugate(T, it)
+}
+
+/** Printing util */
+object MyMatrixIO {
+    fun getMatrixType(mat: Matrix): String {
+        return if (mat.type == MatrixType.UNSPECIFIED) {
+            mat.javaClass.simpleName
+        } else {
+            mat.type.name
+        }
+    }
+
+    fun printTypeSize(out: PrintStream, mat: Matrix) {
+        if (mat is MatrixSparse) {
+            val m = mat as MatrixSparse
+            out.println(
+                "Type = " + getMatrixType(mat) + " , rows = " + mat.getNumRows() +
+                        " , cols = " + mat.getNumCols() + " , nz_length = " + m.nonZeroLength
+            )
+        } else {
+            out.println("Type = " + getMatrixType(mat) + " , rows = " + mat.getNumRows() + " , cols = " + mat.getNumCols())
+        }
+    }
+
+    fun padSpace(builder: java.lang.StringBuilder, length: Int): String {
+        builder.delete(0, builder.length)
+        for (i in 0 until length) {
+            builder.append(' ')
+        }
+        return builder.toString()
+    }
+}
+
+fun ZMatrixRMaj.printFancy2(
+    out: PrintStream = System.out,
+    length: Int = MatrixIO.DEFAULT_LENGTH,
+    allssr: List<String>
+) = this.let { mat ->
+    MyMatrixIO.printTypeSize(out, mat)
+    val format = DecimalFormat("#")
+    val builder = StringBuilder(length)
+    val cols = mat.numCols
+    val c = Complex_F64()
+    var i = 0
+    for (y in 0 until mat.numRows) {
+        for (x in 0 until cols) {
+            mat[y, x, c]
+            var real = UtilEjml.fancyString(c.real, format, length, 4)
+            var img = UtilEjml.fancyString(c.imaginary, format, length, 4)
+            real += MyMatrixIO.padSpace(builder, length - real.length)
+            img = img + "i" + MyMatrixIO.padSpace(builder, length - img.length)
+            out.print("${allssr[i++]}: $real + $img")
+            if (x < mat.numCols - 1) {
+                out.print(" , ")
+            }
+        }
+        out.println()
+    }
 }

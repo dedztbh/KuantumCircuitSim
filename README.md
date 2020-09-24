@@ -1,8 +1,14 @@
 # KuantumCircuitSim
 
-A quantum circuit simulator implemented in Kotlin
+A Lightweight Quantum Circuit Simulator & Analyzer implemented in Kotlin.
 
-Another 15-459 Assignment
+Quantum Computing is no coin-flipping!
+
+Another 15-459 Assignment(-ish).
+
+### Note on Notation
+
+In a joint state, qubits are represented from left to right. For example, |100> means the first qubit is |1> and the second and third are |0>.
 
 ## Usage
 
@@ -12,7 +18,7 @@ example: java -jar xxx.jar example.txt Tester 3
 
 Where example.txt contains list of commands
 
-## Available Operators
+## Operators
 
 Tester: Run a simulation on circuit with initial state |00...0>, then print the circuit's matrix and final state.
 
@@ -20,7 +26,7 @@ TFinder: Similar to Tester, but only print the circuit's matrix.
 
 AllInit: Similar to Tester, but run for each possible initial state (2^N of them).
 
-## Available Commands
+## Commands
 
 - Not i
 - Hadamard i
