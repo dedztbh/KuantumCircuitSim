@@ -13,7 +13,7 @@ class AllInit(N: Int) : TFinder(N) {
     override fun printResult() {
         super.printResult()
         println("\nFinal states: ")
-        alls.forEachIndexed { idx, arr ->
+        alls.forEach { arr ->
             println("Init |${arr.joinToString("")}>")
             var jointState = I1
             arr.forEach { i ->

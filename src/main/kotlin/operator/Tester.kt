@@ -42,7 +42,7 @@ class Tester(N: Int) : TFinder(N) {
     override fun printResult() {
         super.printResult()
         println("\nFinal state: ")
-        println("Init |${"0".repeat(N)}>")
+        println("Init ${allssr[0]}")
         (opMatrix * jointState).printFancy2(allssr = allssr)
     }
 }
