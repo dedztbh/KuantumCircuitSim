@@ -1,6 +1,6 @@
 package operator
 
-import util.*
+import matrix.*
 
 
 /**

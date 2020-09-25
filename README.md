@@ -27,9 +27,11 @@ TFinder: Similar to Tester, but only print the circuit's matrix.
 AllInit: Similar to Tester, but run for each possible initial state (2^N of them).
 
 ## Commands
+i, j, k are indicies of qubit. (0-indexed)
 
 - Not i
 - Hadamard i
+    + You can also use "H" instead of "Hadamard"
 - CNot i j
 - Swap i j
 - CCNot i j k
@@ -40,10 +42,10 @@ AllInit: Similar to Tester, but run for each possible initial state (2^N of them
 - TDag i
 - SqrtNot i
 - SqrtNotDag i
-- SqrtSwap i j (Not implemented yet)
+- SqrtSwap i j
+    + Not implemented yet
 - Rot i deg
     + Rotate qubit counterclockwise by degree, not rad 
 - Measure n
-    + Measures the joint qubit state n times using standard basis
+    + Measures the joint qubit state n times using the standard basis
     + Only works when using Tester
-    + Will end command read

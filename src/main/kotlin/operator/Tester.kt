@@ -1,7 +1,11 @@
 package operator
 
-import org.ejml.data.Complex_F64
-import util.*
+import matrix.CMatrix
+import matrix.CNumber
+import matrix.printFancy2
+import matrix.times
+import readInt
+import upperBound
 import kotlin.random.Random
 
 /**
@@ -11,7 +15,7 @@ import kotlin.random.Random
 class Tester(N: Int) : TFinder(N) {
     /** 2^N by 1 column vector */
     val jointState =
-        Matrix(jointStateSize, 1).apply { set(0, 0, 1.0, 0.0) }
+        CMatrix(jointStateSize, 1).apply { set(0, 0, 1.0, 0.0) }
 
     override fun runCmd(cmd: String): Int {
         if (cmd == "Measure") {
@@ -19,7 +23,7 @@ class Tester(N: Int) : TFinder(N) {
             val results = opMatrix * jointState
             val probs = mutableListOf(0.0)
             val labels = mutableListOf<Int>()
-            val a = Complex_F64()
+            val a = CNumber()
             for (j in 0 until results.numRows) {
                 results.get(0, j, a)
                 if (a.magnitude2 > 0) {
@@ -34,7 +38,7 @@ class Tester(N: Int) : TFinder(N) {
                 println(allssr[labels[index]])
             }
             println()
-            return 1
+            return 0
         }
         return super.runCmd(cmd)
     }

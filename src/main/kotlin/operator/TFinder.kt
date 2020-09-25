@@ -1,6 +1,8 @@
 package operator
 
-import util.*
+import matrix.*
+import readDouble
+import readInt
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.pow
@@ -25,7 +27,7 @@ open class TFinder(val N: Int) : Operator {
     val allssr = alls.map { arr -> "|${arr.reversed().joinToString("")}>" }
 
     val jointStateSize = alls.size
-    val IN2 = Ops.identity(jointStateSize)
+    val IN2 = COps.identity(jointStateSize)
 
     var opMatrix = IN2
 
@@ -35,19 +37,19 @@ open class TFinder(val N: Int) : Operator {
         }
     }
 
-    val matrix0CtrlCache = Array(N) { HashMap<Matrix, Matrix>() }
-    fun get0CtrlMatrix(i: Int, mat: Matrix, cache: Boolean = true): Matrix {
+    val matrix0CtrlCache = Array(N) { HashMap<CMatrix, CMatrix>() }
+    fun get0CtrlMatrix(i: Int, mat: CMatrix, cache: Boolean = true): CMatrix {
         if (cache) matrix0CtrlCache[i][mat]?.let { return it }
         val res = IKronTable[i] kron mat kron IKronTable[N - i - 1]
         if (cache) matrix0CtrlCache[i][mat] = res
         return res
     }
 
-    val matrix1CtrlCache = Array(N) { Array(N) { HashMap<Matrix, Matrix>() } }
+    val matrix1CtrlCache = Array(N) { Array(N) { HashMap<CMatrix, CMatrix>() } }
 
     /** Control matrix generation based on this great article:
      * http://www.sakkaris.com/tutorials/quantum_control_gates.html */
-    fun get1CtrlMatrix(i: Int, j: Int, mat: Matrix, cache: Boolean = true): Matrix {
+    fun get1CtrlMatrix(i: Int, j: Int, mat: CMatrix, cache: Boolean = true): CMatrix {
         if (cache) matrix1CtrlCache[i][j][mat]?.let { return it }
         val res = get0CtrlMatrix(i, KETBRA0) + when {
             i < j -> IKronTable[i] kron KETBRA1 kron
@@ -62,7 +64,7 @@ open class TFinder(val N: Int) : Operator {
         return res
     }
 
-    fun getCCNotMatrix(i: Int, j: Int, k: Int): Matrix {
+    fun getCCNotMatrix(i: Int, j: Int, k: Int): CMatrix {
         /** using Sleator-Weinfurter construction
          * matrix is actually reverse order as graph */
         val cnotij = get1CtrlMatrix(i, j, NOT)
@@ -94,7 +96,7 @@ open class TFinder(val N: Int) : Operator {
         val i = readInt()
         val newOp = when (cmd) {
             "Not" -> get0CtrlMatrix(i, NOT)
-            "Hadamard" -> get0CtrlMatrix(i, H)
+            "Hadamard", "H" -> get0CtrlMatrix(i, H)
             "CNot" -> get1CtrlMatrix(i, readInt(), NOT)
             "Swap" -> {
                 /** https://algassert.com/post/1717
@@ -126,7 +128,7 @@ open class TFinder(val N: Int) : Operator {
                 val rad = readDouble() * PI / 180
                 val sine = sin(rad)
                 val cosine = cos(rad)
-                val rotMat = Matrix(
+                val rotMat = CMatrix(
                     arrayOf(
                         doubleArrayOf(cosine, 0.0, -sine, 0.0),
                         doubleArrayOf(sine, 0.0, cosine, 0.0)
