@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
 
     var cmd = read()
     while (true) {
-        if (cmd.isEmpty() || operator.runCmd(cmd) != 0) break
+        if (cmd.isEmpty() || operator.runCmd(cmd.toUpperCase()) != 0) break
         cmd = read()
     }
     operator.done()

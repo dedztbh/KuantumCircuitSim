@@ -95,18 +95,18 @@ open class TFinder(val N: Int) : Operator {
     override fun runCmd(cmd: String): Int {
         val i = readInt()
         val newOp = when (cmd) {
-            "Not" -> get0CtrlMatrix(i, NOT)
-            "Hadamard", "H" -> get0CtrlMatrix(i, H)
-            "CNot" -> get1CtrlMatrix(i, readInt(), NOT)
-            "Swap" -> {
+            "NOT" -> get0CtrlMatrix(i, NOT)
+            "HADAMARD", "H" -> get0CtrlMatrix(i, H)
+            "CNOT" -> get1CtrlMatrix(i, readInt(), NOT)
+            "SWAP" -> {
                 /** https://algassert.com/post/1717
                  * Swap implemented with 3 CNots */
                 val j = readInt()
                 val cnot0 = get1CtrlMatrix(i, j, NOT)
                 cnot0 * get1CtrlMatrix(j, i, NOT) * cnot0
             }
-            "CCNot" -> getCCNotMatrix(i, readInt(), readInt())
-            "CSwap" -> {
+            "CCNOT" -> getCCNotMatrix(i, readInt(), readInt())
+            "CSWAP" -> {
                 /** https://quantumcomputing.stackexchange.com/
                  * questions/9342/how-to-implement-a-fredkin
                  * -gate-using-toffoli-and-cnots */
@@ -118,13 +118,13 @@ open class TFinder(val N: Int) : Operator {
             "Z" -> get0CtrlMatrix(i, Z)
             "S" -> get0CtrlMatrix(i, S)
             "T" -> get0CtrlMatrix(i, T)
-            "TDag" -> get0CtrlMatrix(i, TDag)
-            "SqrtNot" -> get0CtrlMatrix(i, SQRT_NOT)
-            "SqrtNotDag" -> get0CtrlMatrix(i, SQRT_NOT_DAG)
-//            "SqrtSwap" -> {
+            "TDAG" -> get0CtrlMatrix(i, TDag)
+            "SQRTNOT" -> get0CtrlMatrix(i, SQRT_NOT)
+            "SQRTNOTDAG" -> get0CtrlMatrix(i, SQRT_NOT_DAG)
+//            "SQRTSWAP" -> {
 //                TODO: Implement SqrtSwap
 //            }
-            "Rot" -> {
+            "ROT" -> {
                 val rad = readDouble() * PI / 180
                 val sine = sin(rad)
                 val cosine = cos(rad)
@@ -137,7 +137,7 @@ open class TFinder(val N: Int) : Operator {
                 get0CtrlMatrix(i, rotMat, false)
             }
             else -> {
-                System.err.println("Unknown command \"$cmd\". Stop reading commands.")
+                System.err.println("Unknown command \"${cmd}\". Stop reading commands.")
                 return -1
             }
         }

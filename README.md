@@ -20,14 +20,18 @@ Where example.txt contains list of commands
 
 ## Operators
 
-Tester: Run a simulation on circuit with initial state |00...0>, then print the circuit's matrix and final state.
+TFinder: Generate the circuit's matrix and print it.
 
-TFinder: Similar to Tester, but only print the circuit's matrix.
+Tester: Similar to TFinder but also run |00..0> through circuit and print result. (Supports Measure command)
 
-AllInit: Similar to Tester, but run for each possible initial state (2^N of them).
+AllInit: Similar to TFinder but also run every possible initial states (2^N of them) through circuit and print results.
 
 ## Commands
 i, j, k are indicies of qubit. (0-indexed)
+
+In the input file, each command should be separated by new line or space.
+
+Commands are case-insensitive.
 
 - Not i
 - Hadamard i

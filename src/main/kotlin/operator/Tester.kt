@@ -18,7 +18,7 @@ class Tester(N: Int) : TFinder(N) {
         CMatrix(jointStateSize, 1).apply { set(0, 0, 1.0, 0.0) }
 
     override fun runCmd(cmd: String): Int {
-        if (cmd == "Measure") {
+        if (cmd == "MEASURE") {
             val i = readInt()
             val results = opMatrix * jointState
             val probs = mutableListOf(0.0)
