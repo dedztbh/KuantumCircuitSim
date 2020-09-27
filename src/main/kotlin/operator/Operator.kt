@@ -1,12 +1,14 @@
 package operator
 
+import Config
+
 /**
  * Created by DEDZTBH on 2020/09/22.
  * Project KuantumCircuitSim
  */
 
 /**
- * Children class must have a constructor that takes an Int
+ * Children class must have a constructor that takes an Config object
  */
 interface Operator {
     fun runCmd(cmd: String): Int
@@ -14,9 +16,9 @@ interface Operator {
     fun done() {}
 
     companion object {
-        fun get(name: String, N: Int) =
-            Class.forName("operator.$name")
-                .getDeclaredConstructor(Int::class.java)
-                .newInstance(N) as Operator
+        fun get(config: Config) =
+            Class.forName("operator.${config.operator}")
+                .getDeclaredConstructor(Config::class.java)
+                .newInstance(config) as Operator
     }
 }

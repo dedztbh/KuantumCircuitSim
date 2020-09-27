@@ -1,3 +1,4 @@
+import kotlinx.cli.ArgParser
 import operator.Operator
 import java.io.File
 
@@ -6,21 +7,23 @@ import java.io.File
  * Project KuantumCircuitSim
  */
 
-const val DEFAULT_N = 5
-
-
 fun main(args: Array<String>) {
-    if (args.size < 2) throw IllegalArgumentException("Please provide input file and operator name")
+    val parser = ArgParser("java -jar KuantumCircuitSim.jar")
+    val config = Config(parser)
+    parser.parse(args)
 
-    reader = File(args[0]).inputStream().bufferedReader()
+    reader = File(config.input).bufferedReader()
 
-    val operator = Operator.get(args[1], if (args.size > 2) args[2].toInt() else DEFAULT_N)
+    val operator = Operator.get(config)
 
-    var cmd = read()
-    while (true) {
-        if (cmd.isEmpty() || operator.runCmd(cmd.toUpperCase()) != 0) break
-        cmd = read()
+    if (!config.input_matrix) {
+        var cmd = read()
+        while (true) {
+            if (cmd.isEmpty() || operator.runCmd(cmd.toUpperCase()) != 0) break
+            cmd = read()
+        }
     }
+
     operator.done()
     operator.printResult()
 }

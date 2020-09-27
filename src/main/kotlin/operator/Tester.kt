@@ -1,8 +1,9 @@
 package operator
 
+import Config
 import matrix.CMatrix
+import matrix.CMatrixIO.printFancy2
 import matrix.CNumber
-import matrix.printFancy2
 import matrix.times
 import readInt
 import upperBound
@@ -12,7 +13,7 @@ import kotlin.random.Random
  * Created by DEDZTBH on 2020/09/22.
  * Project KuantumCircuitSim
  */
-class Tester(N: Int) : TFinder(N) {
+class Tester(config: Config) : TFinder(config) {
     /** 2^N by 1 column vector */
     val jointState =
         CMatrix(jointStateSize, 1).apply { set(0, 0, 1.0, 0.0) }

@@ -12,11 +12,21 @@ In a joint state, qubits are represented from left to right. For example, |100> 
 
 ## Usage
 
-java -jar xxx.jar \<input file> \<operator> \<number of qubits (default 5)>
+```
+Usage: java -jar KuantumCircuitSim.jar options_list
+Arguments: 
+    input -> Input file { String }
+    operator -> Operator name { String }
+    N [5] -> Number of qubits (optional) { Int }
+Options: 
+    --output, -o [] -> Output file to save circuit matrix (binary) if specified { String }
+    --input_matrix, -m [false] -> Read input file as circuit matrix (binary) instead of commands if present 
+    --help, -h -> Usage info 
+```
 
-example: java -jar xxx.jar example.txt Tester 3
+example: ```java -jar KuantumCircuitSim.jar example.txt Tester 3 -o output.data```
 
-Where example.txt contains list of commands
+Where example.txt contains list of commands and circuit matrix (binary) will be stored to output.data
 
 ## Operators
 

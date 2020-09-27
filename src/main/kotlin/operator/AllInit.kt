@@ -1,6 +1,8 @@
 package operator
 
+import Config
 import matrix.*
+import matrix.CMatrixIO.printFancy2
 
 
 /**
@@ -9,7 +11,7 @@ import matrix.*
  */
 
 
-class AllInit(N: Int) : TFinder(N) {
+class AllInit(config: Config) : TFinder(config) {
     override fun printResult() {
         super.printResult()
         println("\nFinal states: ")

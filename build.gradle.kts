@@ -6,17 +6,26 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 group = "com.dedztbh"
-version = "1.1.1"
+version = "1.2"
 
 val ejmlVersion = "0.39"
 
 repositories {
     mavenCentral()
+    maven("https://kotlin.bintray.com/kotlinx")
+}
+
+kotlin {
+    sourceSets {
+        dependencies {
+            implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3")
+        }
+    }
 }
 
 dependencies {
     implementation("org.ejml:ejml-core:${ejmlVersion}")
-    implementation("org.ejml:ejml-zdense:${ejmlVersion}")
+    implementation("org.ejml:ejml-simple:${ejmlVersion}")
     testImplementation("org.ejml:ejml-cdense:${ejmlVersion}")
 }
 

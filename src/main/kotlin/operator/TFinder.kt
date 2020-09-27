@@ -1,5 +1,6 @@
 package operator
 
+import Config
 import matrix.*
 import readDouble
 import readInt
@@ -19,7 +20,9 @@ fun allStates(n: Int) =
         IntArray(n) { i -> (it shr i) and 1 }
     }
 
-open class TFinder(val N: Int) : Operator {
+open class TFinder(val config: Config) : Operator {
+    val N = config.N
+
     /** all possible states (left-to-right) */
     val alls = allStates(N)
 
@@ -29,7 +32,7 @@ open class TFinder(val N: Int) : Operator {
     val jointStateSize = alls.size
     val IN2 = COps.identity(jointStateSize)
 
-    var opMatrix = IN2
+    var opMatrix = if (config.input_matrix) CMatrixIO.loadBin(config.input) else IN2
 
     val IKronTable = Array(N + 1) { I1 }.also {
         for (i in 1..N) {
@@ -148,6 +151,12 @@ open class TFinder(val N: Int) : Operator {
     override fun printResult() {
         println("Transformation: ")
         opMatrix.print()
+    }
+
+    override fun done() {
+        if (config.output.isNotBlank()) {
+            CMatrixIO.saveBin(opMatrix, config.output)
+        }
     }
 
 }
