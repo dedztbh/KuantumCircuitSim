@@ -11,7 +11,7 @@ package matrix
  */
 
 
-infix fun CMatrix.kron(B: CMatrix) = CMatrix(numCols * B.numCols, numRows * B.numRows).also { C ->
+infix fun CMatrix.kron(B: CMatrix) = CMatrix(numRows * B.numRows, numCols * B.numCols).also { C ->
     val acomplex = CNumber()
     val bcomplex = CNumber()
     for (i in 0 until numRows) {
