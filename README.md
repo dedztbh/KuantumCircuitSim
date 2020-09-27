@@ -6,9 +6,15 @@ Quantum Computing is no coin-flipping!
 
 Another 15-459 Assignment(-ish).
 
-### Note on Notation
+## Features
+### Simulate A Quantum Circuit
+Of course, it says "Quantum Circuit Simulator"! See below for all supported gates and operations, including measurement!
 
-In a joint state, qubits are represented from left to right. For example, |100> means the first qubit is |1> and the second and third are |0>.
+### N-Qubit System
+You can use any number of qubits you want! Just make sure your computer is powerful enough if N is large. Time complexity is exponential on classical computers!
+
+### Generate Matrix of Circuit
+The power of Linear Algebra! You can save the matrix after the simulation. Next time, just load it and one matrix multiplication gets you the result of running the entire circuit!
 
 ## Usage
 
@@ -20,7 +26,8 @@ Arguments:
     N [5] -> Number of qubits (optional) { Int }
 Options: 
     --output, -o [] -> Output file to save circuit matrix (binary) if specified { String }
-    --input_matrix, -m [false] -> Read input file as circuit matrix (binary) instead of commands if present 
+    --input_matrix, -m [] -> Read circuit matrix (binary) as initial matrix if specified, use an empty file for input if no extra commands { String }
+    --no_t, -q [false] -> Do not print circuit matrix to command line after simulation if present 
     --help, -h -> Usage info 
 ```
 
@@ -63,3 +70,8 @@ Commands are case-insensitive.
 - Measure n
     + Measures the joint qubit state n times using the standard basis
     + Only works when using Tester
+    + Not stored in circuit matrix
+    
+## Note on Notation
+
+In a joint state, qubits are represented from left to right. For example, |100> means the first qubit is |1> and the second and third are |0>.

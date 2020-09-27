@@ -22,8 +22,13 @@ class Config(parser: ArgParser) {
     )
         .default("")
     val input_matrix by parser.option(
-        ArgType.Boolean,
+        ArgType.String,
         shortName = "m",
-        description = "Read input file as circuit matrix (binary) instead of commands if present"
+        description = "Read circuit matrix (binary) as initial matrix if specified, use an empty file for input if no extra commands"
+    ).default("")
+    val no_t by parser.option(
+        ArgType.Boolean,
+        shortName = "q",
+        description = "Do not print circuit matrix in commandline after simulation if present"
     ).default(false)
 }

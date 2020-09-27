@@ -32,7 +32,7 @@ open class TFinder(val config: Config) : Operator {
     val jointStateSize = alls.size
     val IN2 = COps.identity(jointStateSize)
 
-    var opMatrix = if (config.input_matrix) CMatrixIO.loadBin(config.input) else IN2
+    var opMatrix = if (config.input_matrix.isNotBlank()) CMatrixIO.loadBin(config.input_matrix) else IN2
 
     val IKronTable = Array(N + 1) { I1 }.also {
         for (i in 1..N) {
@@ -149,8 +149,10 @@ open class TFinder(val config: Config) : Operator {
     }
 
     override fun printResult() {
-        println("Transformation: ")
-        opMatrix.print()
+        if (!config.no_t) {
+            println("Transformation: ")
+            opMatrix.print()
+        }
     }
 
     override fun done() {

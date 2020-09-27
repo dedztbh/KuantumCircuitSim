@@ -16,12 +16,10 @@ fun main(args: Array<String>) {
 
     val operator = Operator.get(config)
 
-    if (!config.input_matrix) {
-        var cmd = read()
-        while (true) {
-            if (cmd.isEmpty() || operator.runCmd(cmd.toUpperCase()) != 0) break
-            cmd = read()
-        }
+    var cmd = read()
+    while (true) {
+        if (cmd.isEmpty() || operator.runCmd(cmd.toUpperCase()) != 0) break
+        cmd = read()
     }
 
     operator.done()
