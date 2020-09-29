@@ -6,13 +6,14 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 group = "com.dedztbh"
-version = "1.2.1"
+version = "1.2.2"
 
 val ejmlVersion = "0.39"
 
 repositories {
     mavenCentral()
     maven("https://kotlin.bintray.com/kotlinx")
+    maven("https://jitpack.io")
 }
 
 kotlin {
@@ -25,7 +26,9 @@ kotlin {
 
 dependencies {
     implementation("org.ejml:ejml-core:${ejmlVersion}")
-    implementation("org.ejml:ejml-simple:${ejmlVersion}")
+    implementation("org.ejml:ejml-zdense:${ejmlVersion}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+    implementation("com.github.cvb941:kotlin-parallel-operations:1.3")
     testImplementation("org.ejml:ejml-cdense:${ejmlVersion}")
 }
 

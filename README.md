@@ -43,6 +43,9 @@ Tester: Similar to TFinder but also run |00..0> through circuit and print result
 
 AllInit: Similar to TFinder but also run every possible initial states (2^N of them) through circuit and print results.
 
+PTFinder: (Experimental) Same as TFinder but command processing is concurrent. In theory, it should be faster for large number of commands on multi-core machines.
+
+
 ## Commands
 i, j, k are indicies of qubit. (0-indexed)
 
@@ -68,7 +71,7 @@ Commands are case-insensitive.
 - Rot i deg
     + Rotate qubit counterclockwise by degree, not rad 
 - Measure n
-    + Measures the joint qubit state n times using the standard basis
+    + Measures the joint qubit state n times using the standard basis and print results.
     + Only works when using Tester
     + Not stored in circuit matrix
     

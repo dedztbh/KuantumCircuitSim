@@ -1,5 +1,6 @@
 import java.io.BufferedReader
 import java.util.*
+import kotlin.math.pow
 
 /**
  * Created by DEDZTBH on 2020/09/25.
@@ -35,3 +36,8 @@ fun <T : Comparable<T>> List<T>.upperBound(key: T): Int {
     }
     return low
 }
+
+fun allStates(n: Int) =
+    Array(2.0.pow(n).toInt()) {
+        IntArray(n) { i -> (it shr i) and 1 }
+    }

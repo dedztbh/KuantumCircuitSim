@@ -1,12 +1,12 @@
 package operator
 
 import Config
+import allStates
 import matrix.*
 import readDouble
 import readInt
 import kotlin.math.PI
 import kotlin.math.cos
-import kotlin.math.pow
 import kotlin.math.sin
 
 
@@ -15,10 +15,6 @@ import kotlin.math.sin
  * Project KuantumCircuitSim
  */
 
-fun allStates(n: Int) =
-    Array(2.0.pow(n).toInt()) {
-        IntArray(n) { i -> (it shr i) and 1 }
-    }
 
 open class TFinder(val config: Config) : Operator {
     val N = config.N
@@ -40,7 +36,7 @@ open class TFinder(val config: Config) : Operator {
         }
     }
 
-    val matrix0CtrlCache = Array(N) { HashMap<CMatrix, CMatrix>() }
+    open val matrix0CtrlCache: Array<MutableMap<CMatrix, CMatrix>> = Array(N) { HashMap() }
     fun get0CtrlMatrix(i: Int, mat: CMatrix, cache: Boolean = true): CMatrix {
         if (cache) matrix0CtrlCache[i][mat]?.let { return it }
         val res = IKronTable[i] kron mat kron IKronTable[N - i - 1]
@@ -48,7 +44,7 @@ open class TFinder(val config: Config) : Operator {
         return res
     }
 
-    val matrix1CtrlCache = Array(N) { Array(N) { HashMap<CMatrix, CMatrix>() } }
+    open val matrix1CtrlCache: Array<Array<MutableMap<CMatrix, CMatrix>>> = Array(N) { Array(N) { HashMap() } }
 
     /** Control matrix generation based on this great article:
      * http://www.sakkaris.com/tutorials/quantum_control_gates.html */
@@ -144,6 +140,7 @@ open class TFinder(val config: Config) : Operator {
                 return -1
             }
         }
+//        newOp.print()
         opMatrix = newOp * opMatrix
         return 0
     }
