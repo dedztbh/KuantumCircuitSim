@@ -1,6 +1,6 @@
 # KuantumCircuitSim
 
-A Lightweight Quantum Circuit Simulator & Analyzer implemented in Kotlin.
+A Fast & Lightweight Quantum Circuit Simulator & Analyzer implemented in Kotlin.
 
 Quantum Computing is no coin-flipping!
 
@@ -16,6 +16,9 @@ You can use any number of qubits you want! Just make sure your computer is power
 ### Generate Matrix of Circuit
 The power of Linear Algebra! You can save the matrix after the simulation. Next time, just load it and one matrix multiplication gets you the result of running the entire circuit!
 
+### Parallelism
+CPU0 is not alone! Concurrent command processing (with -c option) provides significantly performance boost on multi-core machines, especially for large number of commands!
+
 ## Usage
 
 ```
@@ -27,11 +30,12 @@ Arguments:
 Options: 
     --output, -o [] -> Output file to save circuit matrix (binary) if specified { String }
     --input_matrix, -m [] -> Read circuit matrix (binary) as initial matrix if specified, use an empty file for input if no extra commands { String }
-    --no_t, -q [false] -> Do not print circuit matrix to command line after simulation if present 
-    --help, -h -> Usage info 
+    --no_t, -q [false] -> Do not print circuit matrix in commandline after simulation if present 
+    --concurrent, -c [false] -> Use concurrent implementation if present (recommended on multi-core machines) 
+    --help, -h -> Usage info
 ```
 
-example: ```java -jar KuantumCircuitSim.jar example.txt Tester 3 -o output.data```
+example: ```java -jar KuantumCircuitSim.jar example.txt Tester 3 -o output.data -c```
 
 Where example.txt contains list of commands and circuit matrix (binary) will be stored to output.data
 
@@ -39,12 +43,9 @@ Where example.txt contains list of commands and circuit matrix (binary) will be 
 
 TFinder: Generate the circuit's matrix and print it.
 
-Tester: Similar to TFinder but also run |00..0> through circuit and print result. (Supports Measure command)
+Tester: Similar to TFinder but also run |00..0> through circuit and print result. (Supports Measure command for non-concurrent)
 
 AllInit: Similar to TFinder but also run every possible initial states (2^N of them) through circuit and print results.
-
-PTFinder: (Experimental) Same as TFinder but command processing is concurrent. In theory, it should be faster for large number of commands on multi-core machines.
-
 
 ## Commands
 i, j, k are indicies of qubit. (0-indexed)
@@ -72,7 +73,7 @@ Commands are case-insensitive.
     + Rotate qubit counterclockwise by degree, not rad 
 - Measure n
     + Measures the joint qubit state n times using the standard basis and print results.
-    + Only works when using Tester
+    + Only works when using non-concurrent Tester
     + Not stored in circuit matrix
     
 ## Note on Notation

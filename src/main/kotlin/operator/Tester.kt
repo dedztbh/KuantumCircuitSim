@@ -51,3 +51,16 @@ class Tester(config: Config) : TFinder(config) {
         (opMatrix * jointState).printFancy2(allssr = allssr)
     }
 }
+
+class PTester(config: Config) : PTFinder(config) {
+    /** 2^N by 1 column vector */
+    val jointState =
+        CMatrix(jointStateSize, 1).apply { set(0, 0, 1.0, 0.0) }
+
+    override fun printResult() {
+        super.printResult()
+        println("\nFinal state: ")
+        println("Init ${allssr[0]}")
+        (opMatrix * jointState).printFancy2(allssr = allssr)
+    }
+}

@@ -17,7 +17,7 @@ interface Operator {
 
     companion object {
         fun get(config: Config) =
-            Class.forName("operator.${config.operator}")
+            Class.forName("operator.${if (config.concurrent) "P" else ""}${config.operator}")
                 .getDeclaredConstructor(Config::class.java)
                 .newInstance(config) as Operator
     }
