@@ -99,14 +99,14 @@ open class PTFinder(config: Config) : TFinder(config) {
 
     override fun printResult() {
         opMatrix = runBlocking {
-            reversedNewOps.asReversed().reduceParallel { d1, d2 ->
+            reversedNewOps.reduceParallel { d1, d2 ->
                 GlobalScope.async {
                     val m1 = d1.await()
                     val m2 = d2.await()
 //                    m1.print()
 //                    m2.print()
 //                    println()
-                    m1 * m2
+                    m2 * m1
                 }
             }.await()
         }
