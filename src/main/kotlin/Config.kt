@@ -31,10 +31,10 @@ class Config(parser: ArgParser) {
         shortName = "q",
         description = "Do not print circuit matrix in commandline after simulation if present"
     ).default(false)
-    val concurrent by parser.option(
+    val sequential by parser.option(
         ArgType.Boolean,
-        shortName = "c",
-        description = "Use concurrent implementation if present (recommended on multi-core machines)"
+        shortName = "s",
+        description = "Use sequential instead of concurrent implementation if present (not recommended for multi-core machine)"
     ).default(false)
     val init_state by parser.option(
         ArgType.String,

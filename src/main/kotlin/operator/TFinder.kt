@@ -15,12 +15,10 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-
 /**
  * Created by DEDZTBH on 2020/09/22.
  * Project KuantumCircuitSim
  */
-
 
 open class TFinder(val config: Config) : Operator {
     val N = config.N
@@ -97,7 +95,6 @@ open class TFinder(val config: Config) : Operator {
 //                Tk * CNotik * TDagk * CNotjk * Hk
     }
 
-
     override fun runCmd(cmd: String): Int {
         val i = readInt()
         val newOp = when (cmd) {
@@ -153,25 +150,24 @@ open class TFinder(val config: Config) : Operator {
         return 0
     }
 
-    override fun printResult() {
-        if (!config.no_t) {
-            println("Transformation: ")
-            opMatrix.print()
-        }
-    }
-
     override fun done() {
         if (config.output.isNotBlank()) {
             CMatrixIO.saveBin(opMatrix, config.output)
         }
     }
 
+    override fun printResult() {
+        if (!config.no_t) {
+            println("Transformation: ")
+            opMatrix.print()
+        }
+    }
 }
 
 
 open class PTFinder(config: Config) : TFinder(config) {
 
-    val reversedNewOps = mutableListOf(GlobalScope.async { opMatrix })
+    var reversedNewOps = mutableListOf(GlobalScope.async { opMatrix })
 
     /** Use synchronized maps to prevent concurrent modification */
     override val matrix0CtrlCache = Array(N) { Collections.synchronizedMap(HashMap<CMatrix, CMatrix>()) }
@@ -252,20 +248,21 @@ open class PTFinder(config: Config) : TFinder(config) {
         return 0
     }
 
-    override fun printResult() {
-        opMatrix = runBlocking {
-            reversedNewOps.reduceParallel { d1, d2 ->
-                GlobalScope.async {
-                    val m1 = d1.await()
-                    val m2 = d2.await()
+    fun reduceOps() = runBlocking {
+        reversedNewOps.reduceParallel { d1, d2 ->
+            GlobalScope.async {
+                val m1 = d1.await()
+                val m2 = d2.await()
 //                    m1.print()
 //                    m2.print()
 //                    println()
-                    m2 * m1
-                }
-            }.await()
-        }
+                m2 * m1
+            }
+        }.await()
+    }
 
-        super.printResult()
+    override fun done() {
+        opMatrix = reduceOps()
+        super.done()
     }
 }

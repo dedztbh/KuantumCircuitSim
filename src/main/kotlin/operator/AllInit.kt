@@ -6,12 +6,10 @@ import kotlinx.coroutines.runBlocking
 import matrix.*
 import matrix.CMatrixIO.printFancy2
 
-
 /**
  * Created by DEDZTBH on 2020/09/22.
  * Project KuantumCircuitSim
  */
-
 
 class AllInit(config: Config) : TFinder(config) {
     override fun printResult() {
