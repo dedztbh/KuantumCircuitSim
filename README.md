@@ -32,12 +32,13 @@ Options:
     --input_matrix, -m [] -> Read circuit matrix (binary) as initial matrix if specified, use an empty file for input if no extra commands { String }
     --no_t, -q [false] -> Do not print circuit matrix in commandline after simulation if present 
     --concurrent, -c [false] -> Use concurrent implementation if present (recommended on multi-core machines) 
-    --help, -h -> Usage info
+    --init_state, -i [] -> Read custom initial joint state from csv if specified, first column is real and second column is imaginary { String }
+    --help, -h -> Usage info 
 ```
 
-example: ```java -jar KuantumCircuitSim.jar example.txt Tester 3 -o output.data -c```
+example: ```java -jar KuantumCircuitSim.jar example.txt Tester 3 -o output.data -c -i init.csv```
 
-Where example.txt contains list of commands and circuit matrix (binary) will be stored to output.data
+Where example.txt contains list of commands and circuit matrix (binary) will be stored to output.data and initial state is read from init.csv
 
 ## Operators
 

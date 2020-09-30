@@ -36,4 +36,9 @@ class Config(parser: ArgParser) {
         shortName = "c",
         description = "Use concurrent implementation if present (recommended on multi-core machines)"
     ).default(false)
+    val init_state by parser.option(
+        ArgType.String,
+        shortName = "i",
+        description = "Read custom initial joint state from csv if specified, first column is real and second column is imaginary"
+    ).default("")
 }

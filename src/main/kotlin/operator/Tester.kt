@@ -1,6 +1,7 @@
 package operator
 
 import Config
+import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import matrix.CMatrix
 import matrix.CMatrixIO.printFancy2
 import matrix.CNumber
@@ -14,10 +15,23 @@ import kotlin.random.Random
  * Created by DEDZTBH on 2020/09/22.
  * Project KuantumCircuitSim
  */
+
+fun getJointState(initState: String, jointStateSize: Int) = CMatrix(jointStateSize, 1).apply {
+    if (initState.isBlank()) {
+        set(0, 0, 1.0, 0.0)
+    } else {
+        CsvReader().open(initState) {
+            readAllAsSequence().forEachIndexed { i, list ->
+                val (re, im) = list
+                set(i, 0, re.trim().toDouble(), im.trim().toDouble())
+            }
+        }
+    }
+}
+
 class Tester(config: Config) : TFinder(config) {
     /** 2^N by 1 column vector */
-    var jointState =
-        CMatrix(jointStateSize, 1).apply { set(0, 0, 1.0, 0.0) }
+    var jointState = getJointState(config.init_state, jointStateSize)
     var hasMeasGate = false
 
     override fun runCmd(cmd: String) = when (cmd) {
@@ -121,8 +135,7 @@ class Tester(config: Config) : TFinder(config) {
 
 class PTester(config: Config) : PTFinder(config) {
     /** 2^N by 1 column vector */
-    val jointState =
-        CMatrix(jointStateSize, 1).apply { set(0, 0, 1.0, 0.0) }
+    val jointState = getJointState(config.init_state, jointStateSize)
 
     override fun printResult() {
         super.printResult()

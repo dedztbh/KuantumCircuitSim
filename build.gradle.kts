@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 group = "com.dedztbh"
-version = "1.3"
+version = "1.3.1"
 
 val ejmlVersion = "0.39"
 
@@ -29,6 +29,8 @@ dependencies {
     implementation("org.ejml:ejml-zdense:${ejmlVersion}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
     implementation("com.github.cvb941:kotlin-parallel-operations:1.3")
+    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.11.1")
+    implementation("org.slf4j:slf4j-nop:1.7.30")
     testImplementation("org.ejml:ejml-cdense:${ejmlVersion}")
 }
 
