@@ -39,5 +39,5 @@ fun <T : Comparable<T>> List<T>.upperBound(key: T): Int {
 
 fun allStates(n: Int) =
     Array(2.0.pow(n).toInt()) {
-        IntArray(n) { i -> (it shr i) and 1 }
+        List(n) { i -> (it shr i) and 1 }.asReversed()
     }

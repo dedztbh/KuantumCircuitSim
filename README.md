@@ -43,7 +43,8 @@ Where example.txt contains list of commands and circuit matrix (binary) will be 
 
 TFinder: Generate the circuit's matrix and print it.
 
-Tester: Similar to TFinder but also run |00..0> through circuit and print result. (Supports Measure command for non-concurrent)
+Tester: Similar to TFinder but also run |00..0> through circuit and print result.
+- Non-concurrent Tester supports Measure, MeasAll, MeasOne
 
 AllInit: Similar to TFinder but also run every possible initial states (2^N of them) through circuit and print results.
 
@@ -62,6 +63,8 @@ Commands are case-insensitive.
 - CCNot i j k
 - CSwap i j k
 - Z i
+- CZ i j
+    + Controlled Z gate
 - S i
 - T i
 - TDag i
@@ -70,12 +73,22 @@ Commands are case-insensitive.
 - SqrtSwap i j
     + Not implemented yet
 - Rot i deg
-    + Rotate qubit counterclockwise by degree, not rad 
+    + Rotate qubit counterclockwise by degree, not rad
 - Measure n
-    + Measures the joint qubit state n times using the standard basis and print results
-    + Note that this is a magical Measure that will not change joint state or transformation matrix
+    + Measures all qubit state n times in standard basis and print results
+    + Will not change qubit state or circuit matrix
     + Only works when using non-concurrent Tester
-    + Not stored in circuit matrix
+    + Not saved in circuit matrix
+- MeasAll
+    + Measure all qubits in standard basis and print measure result
+    + Will cause qubit state to collapse
+    + Will make circuit matrix unavailable to print or save
+    + Only works when using non-concurrent Tester
+- MeasAll i
+    + Measure one qubits in standard basis and print measure result
+    + Will cause qubit state to collapse
+    + Will make circuit matrix unavailable to print or save
+    + Only works when using non-concurrent Tester
     
 ## Note on Notation
 

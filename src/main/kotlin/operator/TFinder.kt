@@ -29,7 +29,8 @@ open class TFinder(val config: Config) : Operator {
     val alls = allStates(N)
 
     /** all possible states represented with ket (right-to-left) */
-    val allssr = alls.map { arr -> "|${arr.reversed().joinToString("")}>" }
+    val allss = alls.map { arr -> arr.joinToString("") }
+    val allssket = allss.map { "|$it>" }
 
     val jointStateSize = alls.size
     val IN2 = COps.identity(jointStateSize)
@@ -141,6 +142,7 @@ open class TFinder(val config: Config) : Operator {
                 )
                 get0CtrlMatrix(i, rotMat, false)
             }
+            "CZ" -> get1CtrlMatrix(i, readInt(), Z)
             else -> {
                 System.err.println("Unknown command \"${cmd}\". Stop reading commands.")
                 return -1
@@ -233,6 +235,12 @@ open class PTFinder(config: Config) : TFinder(config) {
                         )
                     )
                     get0CtrlMatrix(i, rotMat, false)
+                }
+            }
+            "CZ" -> {
+                val j = readInt()
+                GlobalScope.async {
+                    get1CtrlMatrix(i, j, Z)
                 }
             }
             else -> {

@@ -77,7 +77,7 @@ object CMatrixIO {
     fun CMatrix.printFancy2(
         out: PrintStream = System.out,
         length: Int = MatrixIO.DEFAULT_LENGTH,
-        allssr: List<String>
+        allssket: List<String>
     ) = let { mat ->
         printTypeSize(out, mat)
         val format = DecimalFormat("#")
@@ -92,7 +92,7 @@ object CMatrixIO {
                 var img = UtilEjml.fancyString(c.imaginary, format, length, 4)
                 real += padSpace(builder, length - real.length)
                 img = img + "i" + padSpace(builder, length - img.length)
-                out.print("${allssr[i++]}: $real + $img")
+                out.print("${allssket[i++]}: $real + $img")
                 if (x < mat.numCols - 1) {
                     out.print(" , ")
                 }
