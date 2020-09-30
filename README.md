@@ -46,6 +46,7 @@ TFinder: Generate the circuit's matrix and print it.
 
 Tester: Similar to TFinder but also run |00..0> through circuit and print result.
 - Non-concurrent Tester supports Measure, MeasAll, MeasOne
+- -i option only works for Tester
 
 AllInit: Similar to TFinder but also run every possible initial states (2^N of them) through circuit and print results.
 
