@@ -17,7 +17,7 @@ You can use any number of qubits you want! Just make sure your computer is power
 The power of Linear Algebra! You can save the matrix after the simulation. Next time, just load it and one matrix multiplication gets you the result of running the entire circuit!
 
 ### Parallelism
-CPU0 is not alone! Concurrent command processing (with -c option) provides significantly performance boost on multi-core machines, especially for large number of commands!
+CPU0 is not alone! Concurrent command processing provides significantly performance boost on multi-core machines, especially for large number of commands!
 
 ## Usage
 
@@ -36,7 +36,7 @@ Options:
     --help, -h -> Usage info 
 ```
 
-example: ```java -jar KuantumCircuitSim.jar example.txt Tester 3 -o output.data -c -i init.csv```
+example: ```java -jar KuantumCircuitSim.jar example.txt Tester 3 -o output.data -i init.csv```
 
 Where example.txt contains list of commands and circuit matrix (binary) will be stored to output.data and initial state is read from init.csv
 
