@@ -73,7 +73,7 @@ Commands are case-insensitive.
     + Rotate qubit counterclockwise by degree, not rad 
 - Measure n
     + Measures the joint qubit state n times using the standard basis and print results
-    + Not that this is a magical Measure that will not change joint state or transformation matrix
+    + Note that this is a magical Measure that will not change joint state or transformation matrix
     + Only works when using non-concurrent Tester
     + Not stored in circuit matrix
     
