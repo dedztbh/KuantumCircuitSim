@@ -9,8 +9,7 @@ import kotlinx.coroutines.runBlocking
 import matrix.*
 import readDouble
 import readInt
-import java.util.*
-import kotlin.collections.HashMap
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -145,7 +144,6 @@ open class TFinder(val config: Config) : Operator {
                 return -1
             }
         }
-//        newOp.print()
         opMatrix = newOp * opMatrix
         return 0
     }
@@ -170,23 +168,25 @@ open class PTFinder(config: Config) : TFinder(config) {
     var reversedNewOps = mutableListOf(GlobalScope.async { opMatrix })
 
     /** Use synchronized maps to prevent concurrent modification */
-    override val matrix0CtrlCache = Array(N) { Collections.synchronizedMap(HashMap<CMatrix, CMatrix>()) }
-    override val matrix1CtrlCache = Array(N) { Array(N) { Collections.synchronizedMap(HashMap<CMatrix, CMatrix>()) } }
+    override val matrix0CtrlCache: Array<MutableMap<CMatrix, CMatrix>> =
+        Array(N) { ConcurrentHashMap<CMatrix, CMatrix>() }
+    override val matrix1CtrlCache: Array<Array<MutableMap<CMatrix, CMatrix>>> =
+        Array(N) { Array(N) { ConcurrentHashMap<CMatrix, CMatrix>() } }
 
-    override fun runCmd(cmd: String): Int {
+    override fun runCmd(cmd: String): Int = GlobalScope.run {
         val i = readInt()
         val newOp = when (cmd) {
-            "NOT" -> GlobalScope.async { get0CtrlMatrix(i, NOT) }
-            "HADAMARD", "H" -> GlobalScope.async { get0CtrlMatrix(i, H) }
+            "NOT" -> async { get0CtrlMatrix(i, NOT) }
+            "HADAMARD", "H" -> async { get0CtrlMatrix(i, H) }
             "CNOT" -> {
                 val j = readInt()
-                GlobalScope.async { get1CtrlMatrix(i, j, NOT) }
+                async { get1CtrlMatrix(i, j, NOT) }
             }
             "SWAP" -> {
                 /** https://algassert.com/post/1717
                  * Swap implemented with 3 CNots */
                 val j = readInt()
-                GlobalScope.async {
+                async {
                     val cnot0 = get1CtrlMatrix(i, j, NOT)
                     cnot0 * get1CtrlMatrix(j, i, NOT) * cnot0
                 }
@@ -194,7 +194,7 @@ open class PTFinder(config: Config) : TFinder(config) {
             "CCNOT" -> {
                 val j = readInt()
                 val k = readInt()
-                GlobalScope.async {
+                async {
                     getCCNotMatrix(i, j, k)
                 }
             }
@@ -204,23 +204,23 @@ open class PTFinder(config: Config) : TFinder(config) {
                  * -gate-using-toffoli-and-cnots */
                 val j = readInt()
                 val k = readInt()
-                GlobalScope.async {
+                async {
                     val cnotkj = get1CtrlMatrix(k, j, NOT)
                     cnotkj * getCCNotMatrix(i, j, k) * cnotkj
                 }
             }
-            "Z" -> GlobalScope.async { get0CtrlMatrix(i, Z) }
-            "S" -> GlobalScope.async { get0CtrlMatrix(i, S) }
-            "T" -> GlobalScope.async { get0CtrlMatrix(i, T) }
-            "TDAG" -> GlobalScope.async { get0CtrlMatrix(i, TDag) }
-            "SQRTNOT" -> GlobalScope.async { get0CtrlMatrix(i, SQRT_NOT) }
-            "SQRTNOTDAG" -> GlobalScope.async { get0CtrlMatrix(i, SQRT_NOT_DAG) }
+            "Z" -> async { get0CtrlMatrix(i, Z) }
+            "S" -> async { get0CtrlMatrix(i, S) }
+            "T" -> async { get0CtrlMatrix(i, T) }
+            "TDAG" -> async { get0CtrlMatrix(i, TDag) }
+            "SQRTNOT" -> async { get0CtrlMatrix(i, SQRT_NOT) }
+            "SQRTNOTDAG" -> async { get0CtrlMatrix(i, SQRT_NOT_DAG) }
 //            "SQRTSWAP" -> {
 //                TODO: Implement SqrtSwap
 //            }
             "ROT" -> {
                 val deg = readDouble()
-                GlobalScope.async {
+                async {
                     val rad = deg * PI / 180
                     val sine = sin(rad)
                     val cosine = cos(rad)
@@ -235,7 +235,7 @@ open class PTFinder(config: Config) : TFinder(config) {
             }
             "CZ" -> {
                 val j = readInt()
-                GlobalScope.async {
+                async {
                     get1CtrlMatrix(i, j, Z)
                 }
             }
@@ -248,21 +248,15 @@ open class PTFinder(config: Config) : TFinder(config) {
         return 0
     }
 
-    fun reduceOps() = runBlocking {
+    suspend fun reduceOps() =
         reversedNewOps.reduceParallel { d1, d2 ->
             GlobalScope.async {
-                val m1 = d1.await()
-                val m2 = d2.await()
-//                    m1.print()
-//                    m2.print()
-//                    println()
-                m2 * m1
+                d2.await() * d1.await()
             }
-        }.await()
-    }
+        }
 
     override fun done() {
-        opMatrix = reduceOps()
+        opMatrix = runBlocking { reduceOps().await() }
         super.done()
     }
 }
