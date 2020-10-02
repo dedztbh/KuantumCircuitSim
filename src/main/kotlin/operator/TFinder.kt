@@ -3,9 +3,7 @@ package operator
 import Config
 import allStates
 import com.lukaskusik.coroutines.transformations.reduce.reduceParallel
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import matrix.*
 import readDouble
 import readInt
@@ -167,11 +165,11 @@ open class PTFinder(config: Config) : TFinder(config) {
 
     var reversedNewOps = mutableListOf(GlobalScope.async { opMatrix })
 
-    /** Use synchronized maps to prevent concurrent modification */
+    /** Use concurrent maps to prevent concurrent modification */
     override val matrix0CtrlCache: Array<MutableMap<CMatrix, CMatrix>> =
-        Array(N) { ConcurrentHashMap<CMatrix, CMatrix>() }
+        Array(N) { ConcurrentHashMap() }
     override val matrix1CtrlCache: Array<Array<MutableMap<CMatrix, CMatrix>>> =
-        Array(N) { Array(N) { ConcurrentHashMap<CMatrix, CMatrix>() } }
+        Array(N) { Array(N) { ConcurrentHashMap() } }
 
     override fun runCmd(cmd: String): Int = GlobalScope.run {
         val i = readInt()

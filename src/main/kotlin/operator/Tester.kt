@@ -12,6 +12,7 @@ import matrix.COps
 import matrix.times
 import readInt
 import upperBound
+import kotlin.math.sqrt
 import kotlin.random.Random
 
 /**
@@ -76,7 +77,6 @@ class Tester(config: Config) : TFinder(config) {
             val index = probs.upperBound(Random.nextDouble())
             val collapseState = labels[index]
             println("MeasAll: ${allssket[collapseState]}")
-            // reset stuff
             jointState = CMatrix(jointStateSize, 1).apply {
                 set(collapseState, 0, 1.0, 0.0)
             }
@@ -87,16 +87,16 @@ class Tester(config: Config) : TFinder(config) {
             val i = readInt()
             jointState = opMatrix * jointState
             opMatrix = IN2
-            var zeroProb = 0.0
+            var prob = 0.0
             val a = CNumber()
             for (j in 0 until jointStateSize) {
                 if (allss[j][i] == '0') {
                     jointState.get(j, 0, a)
-                    zeroProb += a.magnitude2
+                    prob += a.magnitude2
                 }
             }
-            val c = if (Random.nextDouble() < zeroProb) '0' else {
-                zeroProb = 1.0 - zeroProb
+            val c = if (Random.nextDouble() < prob) '0' else {
+                prob = 1.0 - prob
                 '1'
             }
             println("MeasOne: Qubit #$i is |$c>")
@@ -105,7 +105,7 @@ class Tester(config: Config) : TFinder(config) {
                     jointState.set(j, 0, 0.0, 0.0)
                 }
             }
-            COps.scale(1.0 / zeroProb, 0.0, jointState)
+            COps.scale(1.0 / sqrt(prob), 0.0, jointState)
             hasMeasGate = true
             0
         }
@@ -177,7 +177,6 @@ class PTester(config: Config) : PTFinder(config) {
             val index = probs.upperBound(r)
             val collapseState = labels[index]
             println("MeasAll: ${allssket[collapseState]}")
-            // reset stuff
             jointState = CMatrix(jointStateSize, 1).apply {
                 set(collapseState, 0, 1.0, 0.0)
             }
@@ -187,18 +186,18 @@ class PTester(config: Config) : PTFinder(config) {
         "MEASONE" -> runBlocking {
             val deferredOpMatrix = reduceOps()
             val i = readInt()
-            var zeroProb = 0.0
+            var prob = 0.0
             val a = CNumber()
             jointState = deferredOpMatrix.await() * jointState
             reversedNewOps = mutableListOf(GlobalScope.async { IN2 })
             for (j in 0 until jointStateSize) {
                 if (allss[j][i] == '0') {
                     jointState.get(j, 0, a)
-                    zeroProb += a.magnitude2
+                    prob += a.magnitude2
                 }
             }
-            val c = if (Random.nextDouble() < zeroProb) '0' else {
-                zeroProb = 1.0 - zeroProb
+            val c = if (Random.nextDouble() < prob) '0' else {
+                prob = 1.0 - prob
                 '1'
             }
             println("MeasOne: Qubit #$i is |$c>")
@@ -207,7 +206,7 @@ class PTester(config: Config) : PTFinder(config) {
                     jointState.set(j, 0, 0.0, 0.0)
                 }
             }
-            COps.scale(1.0 / zeroProb, 0.0, jointState)
+            COps.scale(1.0 / sqrt(prob), 0.0, jointState)
             hasMeasGate = true
             0
         }
