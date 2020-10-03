@@ -14,7 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 interface Operator {
     suspend fun runCmd(cmd: String): Int
     suspend fun printResult()
-    suspend fun done() {}
+    suspend fun done()
 
     companion object {
         fun get(config: Config, scope: CoroutineScope) =

@@ -9,21 +9,23 @@ import java.io.File
  * Project KuantumCircuitSim
  */
 
-fun main(args: Array<String>) = runBlocking(Dispatchers.Default) {
+fun main(args: Array<String>) {
     val parser = ArgParser("java -jar KuantumCircuitSim.jar")
     val config = Config(parser)
     parser.parse(args)
 
     reader = File(config.input).bufferedReader()
 
-    val operator = Operator.get(config, this)
+    runBlocking(Dispatchers.Default) {
+        val operator = Operator.get(config, this)
 
-    var cmd = read()
-    while (true) {
-        if (cmd.isEmpty() || operator.runCmd(cmd.toUpperCase()) != 0) break
-        cmd = read()
+        var cmd = read()
+        while (true) {
+            if (cmd.isEmpty() || operator.runCmd(cmd.toUpperCase()) != 0) break
+            cmd = read()
+        }
+
+        operator.done()
+        operator.printResult()
     }
-
-    operator.done()
-    operator.printResult()
 }

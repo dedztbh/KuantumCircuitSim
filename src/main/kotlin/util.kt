@@ -8,6 +8,7 @@ import kotlin.math.pow
  */
 
 /** IO */
+@JvmField
 var _tokenizer: StringTokenizer = StringTokenizer("")
 fun read(): String {
     while (!_tokenizer.hasMoreTokens())
