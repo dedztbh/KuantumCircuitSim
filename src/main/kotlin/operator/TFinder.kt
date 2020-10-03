@@ -71,7 +71,7 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
         return res
     }
 
-    open suspend fun getCCNotMatrix(i: Int, j: Int, k: Int): CMatrix {
+    fun getCCNotMatrix(i: Int, j: Int, k: Int): CMatrix {
         /** using Sleator-Weinfurter construction */
         val cnotij = get1CtrlMatrix(i, j, NOT)
         return get1CtrlMatrix(i, k, SQRT_NOT) *
@@ -81,26 +81,41 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
                 get1CtrlMatrix(j, k, SQRT_NOT)
     }
 
-    override suspend fun runCmd(cmd: String): Int {
-        val i = readInt()
-        val newOp = when (cmd) {
+    fun getParams(cmd: String): Array<Number> =
+        when (cmd) {
+            "NOT", "HADAMARD", "H", "Z", "S", "T", "TDAG", "SQRTNOT", "SQRTNOTDAG" -> arrayOf(readInt())
+            "CNOT", "SWAP", "CZ" -> arrayOf(readInt(), readInt())
+            "CCNOT", "CSWAP" -> arrayOf(readInt(), readInt(), readInt())
+            "ROT" -> arrayOf(readInt(), readDouble())
+//            "SQRTSWAP" -> {
+//                TODO: Implement SqrtSwap
+//            }
+            else -> {
+                System.err.println("Unknown command \"${cmd}\". Stop reading commands.")
+                arrayOf()
+            }
+        }
+
+    fun getCmdMatrix(cmd: String, arr: Array<Number>): CMatrix {
+        val i = arr[0] as Int
+        return when (cmd) {
             "NOT" -> get0CtrlMatrix(i, NOT)
             "HADAMARD", "H" -> get0CtrlMatrix(i, H)
-            "CNOT" -> get1CtrlMatrix(i, readInt(), NOT)
+            "CNOT" -> get1CtrlMatrix(i, arr[1] as Int, NOT)
             "SWAP" -> {
                 /** https://algassert.com/post/1717
                  * Swap implemented with 3 CNots */
-                val j = readInt()
+                val j = arr[1] as Int
                 val cnot0 = get1CtrlMatrix(i, j, NOT)
                 cnot0 * get1CtrlMatrix(j, i, NOT) * cnot0
             }
-            "CCNOT" -> getCCNotMatrix(i, readInt(), readInt())
+            "CCNOT" -> getCCNotMatrix(i, arr[1] as Int, arr[2] as Int)
             "CSWAP" -> {
                 /** https://quantumcomputing.stackexchange.com/
                  * questions/9342/how-to-implement-a-fredkin
                  * -gate-using-toffoli-and-cnots */
-                val j = readInt()
-                val k = readInt()
+                val j = arr[1] as Int
+                val k = arr[2] as Int
                 val cnotkj = get1CtrlMatrix(k, j, NOT)
                 cnotkj * getCCNotMatrix(i, j, k) * cnotkj
             }
@@ -114,7 +129,7 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
 //                TODO: Implement SqrtSwap
 //            }
             "ROT" -> {
-                val rad = readDouble() * PI / 180
+                val rad = (arr[1] as Double) * PI / 180.0
                 val sine = sin(rad)
                 val cosine = cos(rad)
                 val rotMat = CMatrix(
@@ -125,13 +140,15 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
                 )
                 get0CtrlMatrix(i, rotMat, false)
             }
-            "CZ" -> get1CtrlMatrix(i, readInt(), Z)
-            else -> {
-                System.err.println("Unknown command \"${cmd}\". Stop reading commands.")
-                return -1
-            }
+            "CZ" -> get1CtrlMatrix(i, arr[1] as Int, Z)
+            else -> throw IllegalArgumentException("getCmdMatrix got unknown command")
         }
-        opMatrix = newOp * opMatrix
+    }
+
+    override suspend fun runCmd(cmd: String): Int {
+        val params = getParams(cmd)
+        if (params.isEmpty()) return -1
+        opMatrix = getCmdMatrix(cmd, params) * opMatrix
         return 0
     }
 
@@ -161,97 +178,13 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
     override val matrix0CtrlCache: Array<MutableMap<CMatrix, CMatrix>> =
         Array(N) { ConcurrentHashMap() }
 
-    fun add0CtrlMatrix(i: Int, mat: CMatrix, cache: Boolean = true) =
-        reversedNewOps.add(scope.async { get0CtrlMatrix(i, mat, cache) })
-
     override val matrix1CtrlCache: Array<Array<MutableMap<CMatrix, CMatrix>>> =
         Array(N) { Array(N) { ConcurrentHashMap() } }
 
-    fun add1CtrlMatrix(i: Int, j: Int, mat: CMatrix, cache: Boolean = true) =
-        reversedNewOps.add(scope.async {
-            if (cache) matrix1CtrlCache[i][j][mat]?.let { return@async it }
-            (get0CtrlMatrix(i, KETBRA0) + when {
-                i < j -> listOf(
-                    IKronTable[i], KETBRA1,
-                    IKronTable[j - i - 1],
-                    mat, IKronTable[N - j - 1]
-                )
-                i > j -> listOf(
-                    IKronTable[j], mat,
-                    IKronTable[i - j - 1],
-                    KETBRA1, IKronTable[N - i - 1]
-                )
-                else -> throw IllegalArgumentException("Control qubit is same as affected qubit")
-            }.reduceParallel { a, b -> a kron b }).also {
-                if (cache) matrix1CtrlCache[i][j][mat] = it
-            }
-        })
-//        reversedNewOps.add(scope.async { get1CtrlMatrix(i, j, mat, cache) })
-
-    /** using Sleator-Weinfurter construction */
-    fun addCCNotMatrix(i: Int, j: Int, k: Int) {
-        add1CtrlMatrix(j, k, SQRT_NOT)
-        add1CtrlMatrix(i, j, NOT)
-        add1CtrlMatrix(j, k, SQRT_NOT_DAG)
-        add1CtrlMatrix(i, j, NOT)
-        add1CtrlMatrix(i, k, SQRT_NOT)
-    }
-
     override suspend fun runCmd(cmd: String): Int = scope.run {
-        val i = readInt()
-        when (cmd) {
-            "NOT" -> add0CtrlMatrix(i, NOT)
-            "HADAMARD", "H" -> add0CtrlMatrix(i, H)
-            "CNOT" -> add1CtrlMatrix(i, readInt(), NOT)
-            "SWAP" -> {
-                /** https://algassert.com/post/1717
-                 * Swap implemented with 3 CNots */
-                val j = readInt()
-                add1CtrlMatrix(i, j, NOT)
-                add1CtrlMatrix(j, i, NOT)
-                add1CtrlMatrix(i, j, NOT)
-            }
-            "CCNOT" -> addCCNotMatrix(i, readInt(), readInt())
-            "CSWAP" -> {
-                /** https://quantumcomputing.stackexchange.com/
-                 * questions/9342/how-to-implement-a-fredkin
-                 * -gate-using-toffoli-and-cnots */
-                val j = readInt()
-                val k = readInt()
-                add1CtrlMatrix(k, j, NOT)
-                addCCNotMatrix(i, j, k)
-                add1CtrlMatrix(k, j, NOT)
-            }
-            "Z" -> add0CtrlMatrix(i, Z)
-            "S" -> add0CtrlMatrix(i, S)
-            "T" -> add0CtrlMatrix(i, T)
-            "TDAG" -> add0CtrlMatrix(i, TDag)
-            "SQRTNOT" -> add0CtrlMatrix(i, SQRT_NOT)
-            "SQRTNOTDAG" -> add0CtrlMatrix(i, SQRT_NOT_DAG)
-//            "SQRTSWAP" -> {
-//                TODO: Implement SqrtSwap
-//            }
-            "ROT" -> {
-                val deg = readDouble()
-                reversedNewOps.add(async {
-                    val rad = deg * PI / 180
-                    val sine = sin(rad)
-                    val cosine = cos(rad)
-                    val rotMat = CMatrix(
-                        arrayOf(
-                            doubleArrayOf(cosine, 0.0, -sine, 0.0),
-                            doubleArrayOf(sine, 0.0, cosine, 0.0)
-                        )
-                    )
-                    get0CtrlMatrix(i, rotMat, false)
-                })
-            }
-            "CZ" -> add1CtrlMatrix(i, readInt(), Z)
-            else -> {
-                System.err.println("Unknown command \"${cmd}\". Stop reading commands.")
-                return -1
-            }
-        }
+        val params = getParams(cmd)
+        if (params.isEmpty()) return -1
+        reversedNewOps.add(async { getCmdMatrix(cmd, params) })
         return 0
     }
 
