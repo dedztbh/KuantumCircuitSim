@@ -8,17 +8,18 @@ Another 15-459 Assignment(-ish).
 
 ### Table of Contents
 - [KuantumCircuitSim](#kuantumcircuitsim)
-  * [Features](#features)
-    + [Simulate A Quantum Circuit](#simulate-a-quantum-circuit)
-    + [N-Qubit System](#n-qubit-system)
-    + [Generate Matrix of Circuit](#generate-matrix-of-circuit)
-    + [Parallelism](#parallelism)
-  * [Usage](#usage)
-  * [Operators](#operators)
-  * [Commands](#commands)
-  * [Note](#note)
-    + [Notation](#notation)
-    + [Matrix File Format](#matrix-file-format)
+    - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+    - [Simulate A Quantum Circuit](#simulate-a-quantum-circuit)
+    - [N-Qubit System](#n-qubit-system)
+    - [Generate Matrix of Circuit](#generate-matrix-of-circuit)
+    - [Parallelism](#parallelism)
+  - [Usage](#usage)
+  - [Operators](#operators)
+  - [Commands](#commands)
+  - [Note](#note)
+    - [Notation](#notation)
+    - [Matrix File Format](#matrix-file-format)
 
 ## Features
 ### Simulate A Quantum Circuit
@@ -31,7 +32,7 @@ You can use any number of qubits you want! Just make sure your computer is power
 The power of Linear Algebra! You can save the matrix after the simulation. Next time, just load it and one matrix multiplication gets you the result of running the entire circuit!
 
 ### Parallelism
-CPU0 is not alone! Concurrent command processing provides significantly performance boost on multi-core machines, especially for large number of commands!
+CPU0 is not alone! Concurrent command processing provides significantly performance boost on multi-core machines, especially for big N and large number of commands!
 
 ## Usage
 
