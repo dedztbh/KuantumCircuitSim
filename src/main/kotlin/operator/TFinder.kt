@@ -36,7 +36,7 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
         if (config.binary_matrix)
             CMatrixIO.loadBin(config.input_matrix)
         else
-            runBlocking { CMatrixIO.loadCsv(config.input_matrix) }
+            CMatrixIO.loadCsv(config.input_matrix)
     } else IN2
 
     val IKronTable = Array(N + 1) { I1 }.also {
