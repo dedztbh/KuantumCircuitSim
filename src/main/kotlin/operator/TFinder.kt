@@ -171,7 +171,7 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
     fun add1CtrlMatrix(i: Int, j: Int, mat: CMatrix, cache: Boolean = true) =
         reversedNewOps.add(scope.async {
             if (cache) matrix1CtrlCache[i][j][mat]?.let { return@async it }
-            get0CtrlMatrix(i, KETBRA0) + when {
+            (get0CtrlMatrix(i, KETBRA0) + when {
                 i < j -> listOf(
                     IKronTable[i], KETBRA1,
                     IKronTable[j - i - 1],
@@ -183,7 +183,7 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
                     KETBRA1, IKronTable[N - i - 1]
                 )
                 else -> throw IllegalArgumentException("Control qubit is same as affected qubit")
-            }.reduceParallel { a, b -> a kron b }.also {
+            }.reduceParallel { a, b -> a kron b }).also {
                 if (cache) matrix1CtrlCache[i][j][mat] = it
             }
         })
