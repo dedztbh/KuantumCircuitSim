@@ -1,15 +1,11 @@
 package operator
 
 import Config
-import com.github.doyaaaaaken.kotlincsv.client.CsvReader
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import matrix.CMatrix
+import matrix.*
 import matrix.CMatrixIO.printFancy2
-import matrix.CNumber
-import matrix.COps
-import matrix.times
 import readInt
 import upperBound
 import kotlin.math.sqrt
@@ -20,25 +16,19 @@ import kotlin.random.Random
  * Project KuantumCircuitSim
  */
 
-fun getJointState(initState: String, jointStateSize: Int) = CMatrix(jointStateSize, 1).apply {
-    if (initState.isBlank()) {
-        set(0, 0, 1.0, 0.0)
-    } else {
-        CsvReader().open(initState) {
-            readAllAsSequence().forEachIndexed { i, list ->
-                val (re, im) = list
-                set(i, 0, re.trim().toDouble(), im.trim().toDouble())
-            }
+fun getJointState(initState: String, jointStateSize: Int) =
+    if (initState.isBlank())
+        CMatrix(jointStateSize, 1).apply {
+            set(0, 0, 1.0, 0.0)
         }
-    }
-}
+    else CMatrixIO.loadCsv(initState)
 
-class Tester(config: Config) : TFinder(config) {
+class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
     /** 2^N by 1 column vector */
     var jointState = getJointState(config.init_state, jointStateSize)
     var hasMeasGate = false
 
-    override fun runCmd(cmd: String) = when (cmd) {
+    override suspend fun runCmd(cmd: String) = when (cmd) {
         "MEASURE" -> {
             val i = readInt()
             val results = opMatrix * jointState
@@ -112,11 +102,11 @@ class Tester(config: Config) : TFinder(config) {
         else -> super.runCmd(cmd)
     }
 
-    override fun done() {
+    override suspend fun done() {
         if (!hasMeasGate) super.done()
     }
 
-    override fun printResult() {
+    override suspend fun printResult() {
         if (hasMeasGate) {
             println("Circuit matrix unavailable due to MeasAll/MeasOne command(s).")
         } else {
@@ -128,13 +118,13 @@ class Tester(config: Config) : TFinder(config) {
     }
 }
 
-class PTester(config: Config) : PTFinder(config) {
+class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
     /** 2^N by 1 column vector */
     var jointState = getJointState(config.init_state, jointStateSize)
     var hasMeasGate = false
 
-    override fun runCmd(cmd: String) = when (cmd) {
-        "MEASURE" -> runBlocking {
+    override suspend fun runCmd(cmd: String) = when (cmd) {
+        "MEASURE" -> {
             val deferredOpMatrix = reduceOps()
             val i = readInt()
             val probs = mutableListOf(0.0)
@@ -159,7 +149,7 @@ class PTester(config: Config) : PTFinder(config) {
             println()
             0
         }
-        "MEASALL" -> runBlocking {
+        "MEASALL" -> {
             val deferredOpMatrix = reduceOps()
             val probs = mutableListOf(0.0)
             val labels = mutableListOf<Int>()
@@ -183,7 +173,7 @@ class PTester(config: Config) : PTFinder(config) {
             hasMeasGate = true
             0
         }
-        "MEASONE" -> runBlocking {
+        "MEASONE" -> {
             val deferredOpMatrix = reduceOps()
             val i = readInt()
             var prob = 0.0
@@ -213,14 +203,14 @@ class PTester(config: Config) : PTFinder(config) {
         else -> super.runCmd(cmd)
     }
 
-    override fun done() {
+    override suspend fun done() {
         if (!hasMeasGate) super.done()
         else {
-            opMatrix = runBlocking { reduceOps().await() }
+            opMatrix = reduceOps().await()
         }
     }
 
-    override fun printResult() {
+    override suspend fun printResult() {
         if (hasMeasGate) {
             println("Circuit matrix unavailable due to MeasAll/MeasOne command(s).")
         } else {

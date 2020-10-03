@@ -1,5 +1,7 @@
 package matrix
 
+import com.github.doyaaaaaken.kotlincsv.client.CsvReader
+import com.github.doyaaaaaken.kotlincsv.client.CsvWriter
 import org.ejml.UtilEjml
 import org.ejml.data.MatrixSparse
 import org.ejml.data.MatrixType
@@ -41,7 +43,6 @@ object CMatrixIO {
         return builder.toString()
     }
 
-    @Throws(IOException::class)
     fun saveBin(A: CMatrix, fileName: String) {
         val fileStream = FileOutputStream(fileName)
         val stream = ObjectOutputStream(fileStream)
@@ -56,8 +57,10 @@ object CMatrixIO {
         }
     }
 
+    fun saveCsv(A: CMatrix, fileName: String) =
+        CsvWriter().writeAll(A.data.asList().windowed(A.rowStride, A.rowStride), fileName)
+
     @Suppress("UNCHECKED_CAST")
-    @Throws(IOException::class)
     fun <T : CMatrix> loadBin(fileName: String): T {
         val fileStream = FileInputStream(fileName)
         val stream = ObjectInputStream(fileStream)
@@ -74,26 +77,35 @@ object CMatrixIO {
         return ret
     }
 
+    fun loadCsv(fileName: String): CMatrix =
+        CMatrix(CsvReader().open(fileName) {
+            readAllAsSequence().map {
+                it.map { s ->
+                    s.trim().toDouble()
+                }.toDoubleArray()
+            }.toMutableList().toTypedArray()
+        })
+
     fun CMatrix.printFancy2(
         out: PrintStream = System.out,
         length: Int = MatrixIO.DEFAULT_LENGTH,
         allssket: List<String>
-    ) = let { mat ->
-        printTypeSize(out, mat)
+    ) {
+//        printTypeSize(out, this)
         val format = DecimalFormat("#")
         val builder = StringBuilder(length)
-        val cols = mat.numCols
+        val cols = numCols
         val c = CNumber()
         var i = 0
-        for (y in 0 until mat.numRows) {
+        for (y in 0 until numRows) {
             for (x in 0 until cols) {
-                mat[y, x, c]
+                get(y, x, c)
                 var real = UtilEjml.fancyString(c.real, format, length, 4)
                 var img = UtilEjml.fancyString(c.imaginary, format, length, 4)
                 real += padSpace(builder, length - real.length)
                 img = img + "i" + padSpace(builder, length - img.length)
                 out.print("${allssket[i++]}: $real + $img")
-                if (x < mat.numCols - 1) {
+                if (x < numCols - 1) {
                     out.print(" , ")
                 }
             }

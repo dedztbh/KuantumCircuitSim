@@ -1,4 +1,5 @@
 import kotlinx.cli.ArgParser
+import kotlinx.coroutines.runBlocking
 import operator.Operator
 import java.io.File
 
@@ -7,14 +8,14 @@ import java.io.File
  * Project KuantumCircuitSim
  */
 
-fun main(args: Array<String>) {
+fun main(args: Array<String>) = runBlocking {
     val parser = ArgParser("java -jar KuantumCircuitSim.jar")
     val config = Config(parser)
     parser.parse(args)
 
     reader = File(config.input).bufferedReader()
 
-    val operator = Operator.get(config)
+    val operator = Operator.get(config, this)
 
     var cmd = read()
     while (true) {

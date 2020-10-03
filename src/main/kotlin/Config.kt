@@ -18,13 +18,13 @@ class Config(parser: ArgParser) {
     val output by parser.option(
         ArgType.String,
         shortName = "o",
-        description = "Output file to save circuit matrix (binary) if specified"
+        description = "Output file to save circuit matrix (csv) if specified"
     )
         .default("")
     val input_matrix by parser.option(
         ArgType.String,
         shortName = "m",
-        description = "Read circuit matrix (binary) as initial matrix if specified, use an empty file for input if no extra commands"
+        description = "Read circuit matrix (csv) as initial matrix if specified"
     ).default("")
     val no_t by parser.option(
         ArgType.Boolean,
@@ -34,11 +34,16 @@ class Config(parser: ArgParser) {
     val sequential by parser.option(
         ArgType.Boolean,
         shortName = "s",
-        description = "Use sequential instead of concurrent implementation if present (not recommended for multi-core machine)"
+        description = "Use sequential instead of concurrent implementation if present"
     ).default(false)
     val init_state by parser.option(
         ArgType.String,
         shortName = "i",
-        description = "Read custom initial joint state from csv if specified, first column is real and second column is imaginary"
+        description = "Read custom initial joint state from csv if specified"
     ).default("")
+    val binary_matrix by parser.option(
+        ArgType.Boolean,
+        shortName = "b",
+        description = "Use binary format instead of csv for read/save circuit matrix if present"
+    ).default(false)
 }

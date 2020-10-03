@@ -1,6 +1,7 @@
 package operator
 
 import Config
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * Created by DEDZTBH on 2020/09/22.
@@ -8,17 +9,17 @@ import Config
  */
 
 /**
- * Children class must have a constructor that takes an Config object
+ * Children class must have a constructor that takes an Config object and a coroutine scope
  */
 interface Operator {
-    fun runCmd(cmd: String): Int
-    fun printResult()
-    fun done() {}
+    suspend fun runCmd(cmd: String): Int
+    suspend fun printResult()
+    suspend fun done() {}
 
     companion object {
-        fun get(config: Config) =
+        fun get(config: Config, scope: CoroutineScope) =
             Class.forName("operator.${if (config.sequential) "" else "P"}${config.operator}")
-                .getDeclaredConstructor(Config::class.java)
-                .newInstance(config) as Operator
+                .getDeclaredConstructor(Config::class.java, CoroutineScope::class.java)
+                .newInstance(config, scope) as Operator
     }
 }
