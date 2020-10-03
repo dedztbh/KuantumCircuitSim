@@ -1,4 +1,5 @@
 import kotlinx.cli.ArgParser
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import operator.Operator
 import java.io.File
@@ -8,7 +9,7 @@ import java.io.File
  * Project KuantumCircuitSim
  */
 
-fun main(args: Array<String>) = runBlocking {
+fun main(args: Array<String>) = runBlocking(Dispatchers.Default) {
     val parser = ArgParser("java -jar KuantumCircuitSim.jar")
     val config = Config(parser)
     parser.parse(args)

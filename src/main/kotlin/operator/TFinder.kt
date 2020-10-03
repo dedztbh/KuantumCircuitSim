@@ -5,7 +5,6 @@ import allStates
 import com.lukaskusik.coroutines.transformations.reduce.reduceParallel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import matrix.*
 import readDouble
 import readInt
@@ -187,6 +186,7 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
                 if (cache) matrix1CtrlCache[i][j][mat] = it
             }
         })
+//        reversedNewOps.add(scope.async { get1CtrlMatrix(i, j, mat, cache) })
 
     /** using Sleator-Weinfurter construction */
     fun addCCNotMatrix(i: Int, j: Int, k: Int) {
