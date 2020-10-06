@@ -95,7 +95,7 @@ object CMatrixIO {
         val format = DecimalFormat("#")
         val builder = StringBuilder(length)
         val cols = numCols
-        val c = CNumber()
+        val c = CNum()
         var i = 0
         for (y in 0 until numRows) {
             for (x in 0 until cols) {

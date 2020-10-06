@@ -196,74 +196,72 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
 
     override suspend fun runCmd(cmd: String): Int {
         val i = readInt()
-        reversedNewOps.run {
-            scope.run {
-                when (cmd) {
-                    "NOT" -> add(async { get0CtrlMatrix(i, NOT) })
-                    "HADAMARD", "H" -> add(async { get0CtrlMatrix(i, H) })
-                    "CNOT" -> {
-                        val j = readInt()
-                        add(async { get1CtrlMatrix(i, j, NOT) })
+        scope.run {
+            reversedNewOps.add(when (cmd) {
+                "NOT" -> async { get0CtrlMatrix(i, NOT) }
+                "HADAMARD", "H" -> async { get0CtrlMatrix(i, H) }
+                "CNOT" -> {
+                    val j = readInt()
+                    async { get1CtrlMatrix(i, j, NOT) }
+                }
+                "SWAP" -> {
+                    /** https://algassert.com/post/1717
+                     * Swap implemented with 3 CNots */
+                    val j = readInt()
+                    async {
+                        val cnot0 = get1CtrlMatrix(i, j, NOT)
+                        cnot0 * get1CtrlMatrix(j, i, NOT) * cnot0
                     }
-                    "SWAP" -> {
-                        /** https://algassert.com/post/1717
-                         * Swap implemented with 3 CNots */
-                        val j = readInt()
-                        add(async {
-                            val cnot0 = get1CtrlMatrix(i, j, NOT)
-                            cnot0 * get1CtrlMatrix(j, i, NOT) * cnot0
-                        })
+                }
+                "CCNOT" -> {
+                    val j = readInt()
+                    val k = readInt()
+                    async { getCCNotMatrix(i, j, k) }
+                }
+                "CSWAP" -> {
+                    /** https://quantumcomputing.stackexchange.com/
+                     * questions/9342/how-to-implement-a-fredkin
+                     * -gate-using-toffoli-and-cnots */
+                    val j = readInt()
+                    val k = readInt()
+                    async {
+                        val cnotkj = get1CtrlMatrix(k, j, NOT)
+                        cnotkj * getCCNotMatrix(i, j, k) * cnotkj
                     }
-                    "CCNOT" -> {
-                        val j = readInt()
-                        val k = readInt()
-                        add(async { getCCNotMatrix(i, j, k) })
-                    }
-                    "CSWAP" -> {
-                        /** https://quantumcomputing.stackexchange.com/
-                         * questions/9342/how-to-implement-a-fredkin
-                         * -gate-using-toffoli-and-cnots */
-                        val j = readInt()
-                        val k = readInt()
-                        add(async {
-                            val cnotkj = get1CtrlMatrix(k, j, NOT)
-                            cnotkj * getCCNotMatrix(i, j, k) * cnotkj
-                        })
-                    }
-                    "Z" -> add(async { get0CtrlMatrix(i, Z) })
-                    "S" -> add(async { get0CtrlMatrix(i, S) })
-                    "T" -> add(async { get0CtrlMatrix(i, T) })
-                    "TDAG" -> add(async { get0CtrlMatrix(i, TDag) })
-                    "SQRTNOT" -> add(async { get0CtrlMatrix(i, SQRT_NOT) })
-                    "SQRTNOTDAG" -> add(async { get0CtrlMatrix(i, SQRT_NOT_DAG) })
+                }
+                "Z" -> async { get0CtrlMatrix(i, Z) }
+                "S" -> async { get0CtrlMatrix(i, S) }
+                "T" -> async { get0CtrlMatrix(i, T) }
+                "TDAG" -> async { get0CtrlMatrix(i, TDag) }
+                "SQRTNOT" -> async { get0CtrlMatrix(i, SQRT_NOT) }
+                "SQRTNOTDAG" -> async { get0CtrlMatrix(i, SQRT_NOT_DAG) }
 //                    "SQRTSWAP" -> {
 //                        TODO: Implement SqrtSwap
 //                    }
-                    "ROT" -> {
-                        val deg = readDouble()
-                        add(async {
-                            val rad = deg * PI / 180.0
-                            val sine = sin(rad)
-                            val cosine = cos(rad)
-                            val rotMat = CMatrix(
-                                arrayOf(
-                                    doubleArrayOf(cosine, 0.0, -sine, 0.0),
-                                    doubleArrayOf(sine, 0.0, cosine, 0.0)
-                                )
+                "ROT" -> {
+                    val deg = readDouble()
+                    async {
+                        val rad = deg * PI / 180.0
+                        val sine = sin(rad)
+                        val cosine = cos(rad)
+                        val rotMat = CMatrix(
+                            arrayOf(
+                                doubleArrayOf(cosine, 0.0, -sine, 0.0),
+                                doubleArrayOf(sine, 0.0, cosine, 0.0)
                             )
-                            get0CtrlMatrix(i, rotMat, false)
-                        })
-                    }
-                    "CZ" -> {
-                        val j = readInt()
-                        add(async { get1CtrlMatrix(i, j, Z) })
-                    }
-                    else -> {
-                        System.err.println("Unknown command \"${cmd}\". Stop reading commands.")
-                        return -1
+                        )
+                        get0CtrlMatrix(i, rotMat, false)
                     }
                 }
-            }
+                "CZ" -> {
+                    val j = readInt()
+                    async { get1CtrlMatrix(i, j, Z) }
+                }
+                else -> {
+                    System.err.println("Unknown command \"${cmd}\". Stop reading commands.")
+                    return -1
+                }
+            })
         }
         return 0
     }

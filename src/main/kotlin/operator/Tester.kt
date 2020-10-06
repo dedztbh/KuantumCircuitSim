@@ -34,7 +34,7 @@ class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
             val results = opMatrix * jointState
             val probs = mutableListOf(0.0)
             val labels = mutableListOf<Int>()
-            val a = CNumber()
+            val a = CNum()
             for (j in 0 until jointStateSize) {
                 results.get(0, j, a)
                 if (a.magnitude2 > 0) {
@@ -56,7 +56,7 @@ class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
             opMatrix = IN2
             val probs = mutableListOf(0.0)
             val labels = mutableListOf<Int>()
-            val a = CNumber()
+            val a = CNum()
             for (j in 0 until jointStateSize) {
                 jointState.get(j, 0, a)
                 if (a.magnitude2 > 0) {
@@ -78,7 +78,7 @@ class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
             jointState = opMatrix * jointState
             opMatrix = IN2
             var prob = 0.0
-            val a = CNumber()
+            val a = CNum()
             for (j in 0 until jointStateSize) {
                 if (allss[j][i] == '0') {
                     jointState.get(j, 0, a)
@@ -132,7 +132,7 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
             opMatrix = deferredOpMatrix.await()
             reversedNewOps = mutableListOf(GlobalScope.async { opMatrix })
             val results = opMatrix * jointState
-            val a = CNumber()
+            val a = CNum()
             for (j in 0 until jointStateSize) {
                 results.get(0, j, a)
                 if (a.magnitude2 > 0) {
@@ -153,7 +153,7 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
             val deferredOpMatrix = reduceOps()
             val probs = mutableListOf(0.0)
             val labels = mutableListOf<Int>()
-            val a = CNumber()
+            val a = CNum()
             jointState = deferredOpMatrix.await() * jointState
             reversedNewOps = mutableListOf(GlobalScope.async { IN2 })
             for (j in 0 until jointStateSize) {
@@ -177,7 +177,7 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
             val deferredOpMatrix = reduceOps()
             val i = readInt()
             var prob = 0.0
-            val a = CNumber()
+            val a = CNum()
             jointState = deferredOpMatrix.await() * jointState
             reversedNewOps = mutableListOf(GlobalScope.async { IN2 })
             for (j in 0 until jointStateSize) {

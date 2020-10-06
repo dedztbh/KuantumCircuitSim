@@ -17,6 +17,7 @@ interface Operator {
     suspend fun done()
 
     companion object {
+        @JvmStatic
         fun get(config: Config, scope: CoroutineScope) =
             Class.forName("operator.${if (config.sequential) "" else "P"}${config.operator}")
                 .getDeclaredConstructor(Config::class.java, CoroutineScope::class.java)

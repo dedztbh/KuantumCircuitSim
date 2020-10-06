@@ -10,22 +10,28 @@ package matrix
  * Kronecker product of two complex matrices
  */
 
-
 infix fun CMatrix.kron(B: CMatrix) = CMatrix(numRows * B.numRows, numCols * B.numCols).also { C ->
-    val acomplex = CNumber()
-    val bcomplex = CNumber()
+    val a = CNum()
+    val b = CNum()
+    val ab = CNum()
+    var ibrow = 0
     for (i in 0 until numRows) {
+        var jbcol = 0
         for (j in 0 until numCols) {
-            get(i, j, acomplex)
+            get(i, j, a)
+            var r = ibrow
             for (rowB in 0 until B.numRows) {
+                var c = jbcol
                 for (colB in 0 until B.numCols) {
-                    B.get(rowB, colB, bcomplex)
-                    acomplex.times(bcomplex).let { aB ->
-                        C.set(i * B.numRows + rowB, j * B.numCols + colB, aB.real, aB.imaginary)
-                    }
+                    B.get(rowB, colB, b)
+                    CMath.multiply(a, b, ab)
+                    C.set(r, c++, ab.real, ab.imaginary)
                 }
+                ++r
             }
+            jbcol += B.numCols
         }
+        ibrow += B.numRows
     }
 }
 
