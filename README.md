@@ -79,6 +79,7 @@ Commands are case-insensitive.
 - Swap i j
 - CCNot i j k
 - CSwap i j k
+- Y i
 - Z i
 - CZ i j
     + Controlled Z gate

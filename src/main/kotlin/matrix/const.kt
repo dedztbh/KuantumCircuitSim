@@ -38,6 +38,12 @@ val SQRT_NOT = CMatrix(
 val SQRT_NOT_DAG = CMatrix(2, 2).also {
     COps.transposeConjugate(SQRT_NOT, it)
 }
+val Y = CMatrix(
+    arrayOf(
+        doubleArrayOf(0.0, 0.0, 0.0, -1.0),
+        doubleArrayOf(0.0, 1.0, 0.0, 0.0),
+    )
+)
 val Z = CMatrix(
     arrayOf(
         doubleArrayOf(1.0, 0.0, 0.0, 0.0),

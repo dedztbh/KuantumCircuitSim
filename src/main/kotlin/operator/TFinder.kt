@@ -131,6 +131,7 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
                 val cnotkj = get1CtrlMatrix(k, j, NOT)
                 cnotkj * getCCNotMatrix(i, j, k) * cnotkj
             }
+            "Y" -> get0CtrlMatrix(i, Y)
             "Z" -> get0CtrlMatrix(i, Z)
             "S" -> get0CtrlMatrix(i, S)
             "T" -> get0CtrlMatrix(i, T)
@@ -141,7 +142,7 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
 //                TODO: Implement SqrtSwap
 //            }
             "ROT" -> {
-                val rad = readDouble() * PI / 180
+                val rad = readDouble() * PI / 180.0
                 val sine = sin(rad)
                 val cosine = cos(rad)
                 val rotMat = CMatrix(
@@ -229,6 +230,7 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
                         cnotkj * getCCNotMatrix(i, j, k) * cnotkj
                     }
                 }
+                "Y" -> async { get0CtrlMatrix(i, Y) }
                 "Z" -> async { get0CtrlMatrix(i, Z) }
                 "S" -> async { get0CtrlMatrix(i, S) }
                 "T" -> async { get0CtrlMatrix(i, T) }
