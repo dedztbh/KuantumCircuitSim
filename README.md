@@ -124,7 +124,7 @@ In a joint state, qubits are represented from left to right. For example, |100> 
 
 ### Matrix File Format
 
-A matrix in CSV format is represented with alternating real and imaginary parts in row-major fashion (column-major for JBLAS version).
+A matrix in CSV format is represented with alternating real and imaginary parts in row-major fashion.
 For example, the matrix
 ```
 [[1+0i, 0+1i],
