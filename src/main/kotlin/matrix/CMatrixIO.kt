@@ -80,9 +80,7 @@ object CMatrixIO {
     fun loadCsv(fileName: String): CMatrix =
         CMatrix(CsvReader().open(fileName) {
             readAllAsSequence().map {
-                it.map { s ->
-                    s.trim().toDouble()
-                }.toDoubleArray()
+                DoubleArray(it.size) { i -> it[i].toDouble() }
             }.toMutableList().toTypedArray()
         })
 

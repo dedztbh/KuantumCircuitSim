@@ -6,14 +6,19 @@ Quantum Computing is no coin-flipping!
 
 Another 15-459 Assignment(-ish).
 
+There are 2 versions, usage is identical:    
+- Normal (EJML) version: No extra dependencies, very lightweight, good for small input
+- JBLAS version: Need BLAS, hardware-accelerated, good for big input
+
 ### Table of Contents
 - [KuantumCircuitSim](#kuantumcircuitsim)
     - [Table of Contents](#table-of-contents)
   - [Features](#features)
     - [Simulate A Quantum Circuit](#simulate-a-quantum-circuit)
     - [N-Qubit System](#n-qubit-system)
-    - [Generate Matrix of Circuit](#generate-matrix-of-circuit)
+    - [Generate Circuit Matrix](#generate-circuit-matrix)
     - [Parallelism](#parallelism)
+    - [Hardware Acceleration (BLAS)](#hardware-acceleration--blas-)
   - [Usage](#usage)
   - [Operators](#operators)
   - [Commands](#commands)
@@ -22,17 +27,20 @@ Another 15-459 Assignment(-ish).
     - [Matrix File Format](#matrix-file-format)
 
 ## Features
-### Simulate A Quantum Circuit
+#### Simulate A Quantum Circuit
 Of course, it says "Quantum Circuit Simulator"! See below for all supported gates and operations, including measurement!
 
-### N-Qubit System
+#### N-Qubit System
 You can use any number of qubits you want! Just make sure your computer is powerful enough if N is large. Time complexity is exponential on classical computers!
 
-### Generate Matrix of Circuit
+#### Generate Circuit Matrix
 The power of Linear Algebra! You can save the matrix after the simulation. Next time, just load it and one matrix multiplication gets you the result of running the entire circuit!
 
-### Parallelism
-CPU0 is not alone! Concurrent command processing provides significantly performance boost on multi-core machines, especially for big N and large number of commands!
+#### Parallelism
+CPU0 is not alone! Concurrent command processing provides significantly performance boost on multi-core machines, especially for big N and large number of commands! (Sequential implementation is better for small input though)
+
+#### Hardware Acceleration (BLAS)
+Now with JBLAS! EJML is great for small matrices but for not big ones (matrices have size 2^N x 2^N). Thus I added a JBLAS version that can use BLAS to really speed things up. With BLAS, you can utilize your CPU/GPU much better!
 
 ## Usage
 
@@ -116,7 +124,7 @@ In a joint state, qubits are represented from left to right. For example, |100> 
 
 ### Matrix File Format
 
-A matrix in CSV format is represented with alternating real and imaginary parts in row-major fashion.
+A matrix in CSV format is represented with alternating real and imaginary parts in row-major fashion (column-major for JBLAS version).
 For example, the matrix
 ```
 [[1+0i, 0+1i],
@@ -127,4 +135,4 @@ is stored in CSV file like
 1,0,0,1
 0,-1,1,0
 ```
-Alternatively, circuit matrix can be saved/loaded in Java binary format (with -b option). It might be faster to save/load but it is not human readable. In case you want to read it, it is a `org.ejml.data.ZMatrixRMaj`.
+Alternatively, circuit matrix can be saved/loaded in Java binary format (with -b option). It might be faster to save/load but it is not human readable. In case you want to read it, it is a `org.ejml.data.ZMatrixRMaj` (`org.jblas.ComplexDoubleMatrix` for JBLAS version).
