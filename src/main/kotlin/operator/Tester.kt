@@ -125,13 +125,12 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
 
     override suspend fun runCmd(cmd: String) = when (cmd) {
         "MEASURE" -> {
-            val deferredOpMatrix = reduceOps()
             val i = readInt()
-            val probs = mutableListOf(0.0)
-            val labels = mutableListOf<Int>()
-            opMatrix = deferredOpMatrix.await()
+            opMatrix = reduceOps()
             reversedNewOps = mutableListOf(GlobalScope.async { opMatrix })
             val results = opMatrix * jointState
+            val probs = mutableListOf(0.0)
+            val labels = mutableListOf<Int>()
             val a = CNum()
             for (j in 0 until jointStateSize) {
                 results.get(0, j, a)
@@ -150,12 +149,11 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
             0
         }
         "MEASALL" -> {
-            val deferredOpMatrix = reduceOps()
+            jointState = reduceOps() * jointState
+            reversedNewOps = mutableListOf(GlobalScope.async { IN2 })
             val probs = mutableListOf(0.0)
             val labels = mutableListOf<Int>()
             val a = CNum()
-            jointState = deferredOpMatrix.await() * jointState
-            reversedNewOps = mutableListOf(GlobalScope.async { IN2 })
             for (j in 0 until jointStateSize) {
                 jointState.get(j, 0, a)
                 if (a.magnitude2 > 0) {
@@ -174,12 +172,11 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
             0
         }
         "MEASONE" -> {
-            val deferredOpMatrix = reduceOps()
             val i = readInt()
+            jointState = reduceOps() * jointState
+            reversedNewOps = mutableListOf(GlobalScope.async { IN2 })
             var prob = 0.0
             val a = CNum()
-            jointState = deferredOpMatrix.await() * jointState
-            reversedNewOps = mutableListOf(GlobalScope.async { IN2 })
             for (j in 0 until jointStateSize) {
                 if (allss[j][i] == '0') {
                     jointState.get(j, 0, a)
@@ -206,7 +203,7 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
     override suspend fun done() {
         if (!hasMeasGate) super.done()
         else {
-            opMatrix = reduceOps().await()
+            opMatrix = reduceOps()
         }
     }
 

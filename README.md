@@ -8,7 +8,7 @@ Another 15-459 Assignment(-ish).
 
 There are 2 versions, usage is identical:    
 - Normal (EJML) version: No extra dependencies, very lightweight, good for small input
-- JBLAS version: Need BLAS, hardware-accelerated, good for big input
+- JBLAS version: Need BLAS, hardware-accelerated, good for big input (see [jblas_dev](https://github.com/DEDZTBH/KuantumCircuitSim/tree/jblas_dev) branch)
 
 ### Table of Contents
 - [KuantumCircuitSim](#kuantumcircuitsim)
@@ -18,7 +18,7 @@ There are 2 versions, usage is identical:
     - [N-Qubit System](#n-qubit-system)
     - [Generate Circuit Matrix](#generate-circuit-matrix)
     - [Parallelism](#parallelism)
-    - [Hardware Acceleration (BLAS)](#hardware-acceleration--blas-)
+    - [Hardware Acceleration (BLAS)](#hardware-acceleration-blas)
   - [Usage](#usage)
   - [Operators](#operators)
   - [Commands](#commands)

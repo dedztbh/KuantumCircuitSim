@@ -180,6 +180,8 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
     }
 }
 
+const val CONCURRENT_MATRIX = 4096
+
 open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
 
     @JvmField
@@ -264,19 +266,22 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
                     return -1
                 }
             })
+            if (reversedNewOps.size >= CONCURRENT_MATRIX) {
+                val newNewOps = reduceOps()
+                reversedNewOps = mutableListOf(async { newNewOps })
+            }
         }
         return 0
     }
 
     suspend fun reduceOps() =
-        reversedNewOps.reduceParallel { d1, d2 ->
-            scope.async {
-                d2.await() * d1.await()
+        reversedNewOps.map { it.await() }
+            .reduceParallel { d1, d2 ->
+                d2 * d1
             }
-        }
 
     override suspend fun done() {
-        opMatrix = reduceOps().await()
+        opMatrix = reduceOps()
         super.done()
     }
 }
