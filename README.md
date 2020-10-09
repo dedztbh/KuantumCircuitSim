@@ -8,7 +8,8 @@ Another 15-459 Assignment(-ish).
 
 There are 2 versions, usage is identical:    
 - Normal (EJML) version: No extra dependencies, very lightweight, good for small input
-- JBLAS version: Need BLAS, hardware-accelerated, good for big input (see [jblas_dev](https://github.com/DEDZTBH/KuantumCircuitSim/tree/jblas_dev) branch)
+- JBLAS version: Accelerated with BLAS, good for big input (see [jblas_dev](https://github.com/DEDZTBH/KuantumCircuitSim/tree/jblas_dev) branch)
+    - Might need a BLAS implementation. See [JBLAS website](http://jblas.org/) for more details on dependencies
 
 ### Table of Contents
 - [KuantumCircuitSim](#kuantumcircuitsim)
@@ -18,7 +19,7 @@ There are 2 versions, usage is identical:
     - [N-Qubit System](#n-qubit-system)
     - [Generate Circuit Matrix](#generate-circuit-matrix)
     - [Parallelism](#parallelism)
-    - [Hardware Acceleration (BLAS)](#hardware-acceleration-blas)
+    - [Acceleration with BLAS](#acceleration-with-blas)
   - [Usage](#usage)
   - [Operators](#operators)
   - [Commands](#commands)
@@ -39,8 +40,8 @@ The power of Linear Algebra! You can save the matrix after the simulation. Next 
 #### Parallelism
 CPU0 is not alone! Concurrent command processing provides significantly performance boost on multi-core machines, especially for big N and large number of commands! (Sequential implementation is better for small input though)
 
-#### Hardware Acceleration (BLAS)
-Now with JBLAS! EJML is great for small matrices but for not big ones (matrices have size 2^N x 2^N). Thus I added a JBLAS version that can use BLAS to really speed things up. With BLAS, you can utilize your CPU/GPU much better!
+#### Acceleration with BLAS
+Now with JBLAS! EJML is great for small matrices but for not big ones (matrices have size 2^N x 2^N). Thus I added a JBLAS version that uses hardware-optimized BLAS library and can really speed things up!
 
 ## Usage
 
