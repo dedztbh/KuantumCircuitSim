@@ -1,5 +1,4 @@
-package matrix
-
+package com.dedztbh.kuantum.ejml.matrix
 
 /**
  * Created by DEDZTBH on 2020/09/22.

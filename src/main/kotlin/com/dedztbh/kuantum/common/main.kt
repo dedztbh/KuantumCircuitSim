@@ -1,7 +1,8 @@
+package com.dedztbh.kuantum.common
+
 import kotlinx.cli.ArgParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import operator.Operator
 import java.io.File
 
 /**
@@ -9,15 +10,15 @@ import java.io.File
  * Project KuantumCircuitSim
  */
 
-fun main(args: Array<String>) {
-    val parser = ArgParser("java -jar Kuantum.jar")
+fun main(args: Array<String>, lib: String) {
+    val parser = ArgParser(CMD)
     val config = Config(parser)
     parser.parse(args)
 
     reader = File(config.input).bufferedReader()
 
     runBlocking(Dispatchers.Default) {
-        val operator = Operator.get(config, this)
+        val operator = Operator.get(config, this, lib)
 
         var cmd = read()
         while (true) {

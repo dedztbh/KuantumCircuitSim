@@ -1,13 +1,10 @@
-package operator
+package com.dedztbh.kuantum.ejml.operator
 
-import Config
-import allStates
+import com.dedztbh.kuantum.common.*
+import com.dedztbh.kuantum.ejml.matrix.*
 import com.lukaskusik.coroutines.transformations.reduce.reduceParallel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import matrix.*
-import readDouble
-import readInt
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.PI
 import kotlin.math.cos
@@ -42,9 +39,9 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
     @JvmField
     var opMatrix = if (config.input_matrix.isNotBlank()) {
         if (config.binary_matrix)
-            CMatrixIO.loadBin(config.input_matrix)
+            loadBin(config.input_matrix)
         else
-            CMatrixIO.loadCsv(config.input_matrix)
+            loadCsv(config.input_matrix)
     } else IN2
 
     @JvmField
@@ -186,9 +183,9 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
     override suspend fun done() {
         if (config.output.isNotBlank()) {
             if (config.binary_matrix)
-                CMatrixIO.saveBin(opMatrix, config.output)
+                saveBin(opMatrix, config.output)
             else
-                CMatrixIO.saveCsv(opMatrix, config.output)
+                saveCsv(opMatrix, config.output)
         }
     }
 

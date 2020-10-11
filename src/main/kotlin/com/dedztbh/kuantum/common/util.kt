@@ -1,3 +1,5 @@
+package com.dedztbh.kuantum.common
+
 import java.io.BufferedReader
 import java.util.*
 import kotlin.math.pow

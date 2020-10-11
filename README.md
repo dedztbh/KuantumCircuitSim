@@ -8,7 +8,7 @@ Another 15-459 Assignment(-ish).
 
 There are 2 versions with identical usage implemented with different libraries:    
 - EJML version: No native dependencies, super lightweight, good for small input
-- JBLAS version: Accelerated with BLAS, good for big input (see [jblas_dev](https://github.com/DEDZTBH/KuantumCircuitSim/tree/jblas_dev) branch)
+- JBLAS version: Accelerated with BLAS, good for big input
     - JBLAS comes with default BLAS library for major OS's so it works right out of the box. For extreme performance, you can build JBLAS with custom BLAS library (like OpenBlas, ATLAS, cuBLAS) and put the library file(s) under library load path (for example, current working directory). See [JBLAS github page](https://github.com/jblas-project/jblas) for more detail.
     
 ### Table of Contents
@@ -57,7 +57,7 @@ Options:
     --no_t, -q [false] -> Do not print circuit matrix in commandline after simulation if present 
     --sequential, -s [false] -> Use sequential instead of concurrent implementation if present 
     --init_state, -i [] -> Read custom initial joint state from csv if specified { String }
-    --binary_matrix, -b [false] -> Use binary format instead of csv for read/save circuit matrix if present 
+    --binary_matrix, -b [false] -> Use binary format instead of csv for read/save circuit matrix if present (EJML version only)
     --help, -h -> Usage info 
 ```
 
@@ -136,4 +136,4 @@ is stored in CSV file like
 1,0,0,1
 0,-1,1,0
 ```
-Alternatively, circuit matrix can be saved/loaded in Java binary format (with -b option). It might be faster to save/load but it is not human readable. In case you want to read it, it is a `org.ejml.data.ZMatrixRMaj` (`org.jblas.ComplexDoubleMatrix` for JBLAS version).
+(EJML version only) Alternatively, circuit matrix can be saved/loaded in Java binary format (with -b option). It might be faster to save/load but it is not human readable. In case you want to read it, it is a `org.ejml.data.ZMatrixRMaj`.

@@ -1,12 +1,10 @@
-package operator
+package com.dedztbh.kuantum.jblas.operator
 
-import Config
+import com.dedztbh.kuantum.common.Config
+import com.dedztbh.kuantum.jblas.matrix.*
 import com.lukaskusik.coroutines.transformations.map.mapParallel
-import com.lukaskusik.coroutines.transformations.reduce.reduceParallel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import matrix.*
-import matrix.CMatrixIO.printFancy2
 
 /**
  * Created by DEDZTBH on 2020/09/22.
@@ -19,11 +17,12 @@ class AllInit(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
         println("\nFinal states: ")
         alls.forEachIndexed { idx, arr ->
             println("Init ${allssket[idx]}")
-            var jointState = I1
-            arr.forEach { i ->
+            val it = arr.iterator()
+            var jointState = if (it.next() == 0) KET0 else KET1
+            it.forEachRemaining { i ->
                 jointState = jointState kron (if (i == 0) KET0 else KET1)
             }
-            (opMatrix * jointState).printFancy2(allssket = allssket)
+            (opMatrix * jointState).printFancy(allssket)
             println()
         }
     }
@@ -35,13 +34,16 @@ class PAllInit(config: Config, scope: CoroutineScope) : PTFinder(config, scope) 
         println("\nFinal states: ")
         alls.mapParallel { arr ->
             scope.async {
-                opMatrix *
-                        arr.mapParallel { if (it == 0) KET0 else KET1 }
-                            .reduceParallel { a, b -> a kron b }
+                val it = arr.iterator()
+                var jointState = if (it.next() == 0) KET0 else KET1
+                it.forEachRemaining { i ->
+                    jointState = jointState kron (if (i == 0) KET0 else KET1)
+                }
+                opMatrix * jointState
             }
         }.forEachIndexed { i, mat ->
             println("Init ${allssket[i]}")
-            mat.await().printFancy2(allssket = allssket)
+            mat.await().printFancy(allssket)
             println()
         }
     }

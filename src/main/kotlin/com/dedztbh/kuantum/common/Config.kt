@@ -1,8 +1,9 @@
+package com.dedztbh.kuantum.common
+
 import kotlinx.cli.ArgParser
 import kotlinx.cli.ArgType
 import kotlinx.cli.default
 import kotlinx.cli.optional
-
 
 /**
  * Created by DEDZTBH on 2020/09/27.
@@ -10,6 +11,8 @@ import kotlinx.cli.optional
  */
 
 const val DEFAULT_N = 5
+
+const val CMD = "java -jar Kuantum.jar"
 
 class Config(parser: ArgParser) {
     val input by parser.argument(ArgType.String, description = "Input file")
@@ -44,6 +47,6 @@ class Config(parser: ArgParser) {
     val binary_matrix by parser.option(
         ArgType.Boolean,
         shortName = "b",
-        description = "Use binary format instead of csv for read/save circuit matrix if present"
+        description = "Use binary format instead of csv for read/save circuit matrix if present (EJML version only)"
     ).default(false)
 }

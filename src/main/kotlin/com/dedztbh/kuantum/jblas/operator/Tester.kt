@@ -1,13 +1,11 @@
-package operator
+package com.dedztbh.kuantum.jblas.operator
 
-import Config
+import com.dedztbh.kuantum.common.Config
+import com.dedztbh.kuantum.common.readInt
+import com.dedztbh.kuantum.common.upperBound
+import com.dedztbh.kuantum.jblas.matrix.*
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import matrix.*
-import matrix.CMatrixIO.printFancy2
-import readInt
-import upperBound
 import kotlin.math.sqrt
 import kotlin.random.Random
 
@@ -19,9 +17,9 @@ import kotlin.random.Random
 fun getJointState(initState: String, jointStateSize: Int) =
     if (initState.isBlank())
         CMatrix(jointStateSize, 1).apply {
-            set(0, 0, 1.0, 0.0)
+            put(0, 0, 1.0)
         }
-    else CMatrixIO.loadCsv(initState)
+    else loadCsv(initState)
 
 class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
     /** 2^N by 1 column vector */
@@ -34,12 +32,11 @@ class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
             val results = opMatrix * jointState
             val probs = mutableListOf(0.0)
             val labels = mutableListOf<Int>()
-            val a = CNum()
             for (j in 0 until jointStateSize) {
-                results.get(0, j, a)
-                if (a.magnitude2 > 0) {
+                val amag2 = results.get(0, j).magnitude2
+                if (amag2 > 0) {
                     labels.add(j)
-                    probs.add(a.magnitude2 + probs.last())
+                    probs.add(amag2 + probs.last())
                 }
             }
             println("Measurement(s):")
@@ -56,19 +53,18 @@ class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
             opMatrix = IN2
             val probs = mutableListOf(0.0)
             val labels = mutableListOf<Int>()
-            val a = CNum()
             for (j in 0 until jointStateSize) {
-                jointState.get(j, 0, a)
-                if (a.magnitude2 > 0) {
+                val amag2 = jointState.get(j, 0).magnitude2
+                if (amag2 > 0) {
                     labels.add(j)
-                    probs.add(a.magnitude2 + probs.last())
+                    probs.add(amag2 + probs.last())
                 }
             }
             val index = probs.upperBound(Random.nextDouble())
             val collapseState = labels[index]
             println("MeasAll: ${allssket[collapseState]}")
             jointState = CMatrix(jointStateSize, 1).apply {
-                set(collapseState, 0, 1.0, 0.0)
+                put(collapseState, 0, 1.0)
             }
             hasMeasGate = true
             0
@@ -78,11 +74,9 @@ class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
             jointState = opMatrix * jointState
             opMatrix = IN2
             var prob = 0.0
-            val a = CNum()
             for (j in 0 until jointStateSize) {
                 if (allss[j][i] == '0') {
-                    jointState.get(j, 0, a)
-                    prob += a.magnitude2
+                    prob += jointState.get(j, 0).magnitude2
                 }
             }
             val c = if (Random.nextDouble() < prob) '0' else {
@@ -92,10 +86,10 @@ class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
             println("MeasOne: Qubit #$i is |$c>")
             for (j in 0 until jointStateSize) {
                 if (allss[j][i] != c) {
-                    jointState.set(j, 0, 0.0, 0.0)
+                    jointState.put(j, 0, 0.0, 0.0)
                 }
             }
-            COps.scale(1.0 / sqrt(prob), 0.0, jointState)
+            jointState.muli(1.0 / sqrt(prob))
             hasMeasGate = true
             0
         }
@@ -114,7 +108,7 @@ class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
         }
         println("\nFinal state: ")
         println("Init ${allssket[0]}")
-        (opMatrix * jointState).printFancy2(allssket = allssket)
+        (opMatrix * jointState).printFancy(allssket)
     }
 }
 
@@ -127,16 +121,15 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
         "MEASURE" -> {
             val i = readInt()
             opMatrix = reduceOps()
-            reversedNewOps = mutableListOf(GlobalScope.async { opMatrix })
+            reversedNewOps = mutableListOf(scope.async { opMatrix })
             val results = opMatrix * jointState
             val probs = mutableListOf(0.0)
             val labels = mutableListOf<Int>()
-            val a = CNum()
             for (j in 0 until jointStateSize) {
-                results.get(0, j, a)
-                if (a.magnitude2 > 0) {
+                val amag2 = results.get(0, j).magnitude2
+                if (amag2 > 0) {
                     labels.add(j)
-                    probs.add(a.magnitude2 + probs.last())
+                    probs.add(amag2 + probs.last())
                 }
             }
             println("Measurement(s):")
@@ -150,15 +143,14 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
         }
         "MEASALL" -> {
             jointState = reduceOps() * jointState
-            reversedNewOps = mutableListOf(GlobalScope.async { IN2 })
+            reversedNewOps = mutableListOf(scope.async { IN2 })
             val probs = mutableListOf(0.0)
             val labels = mutableListOf<Int>()
-            val a = CNum()
             for (j in 0 until jointStateSize) {
-                jointState.get(j, 0, a)
-                if (a.magnitude2 > 0) {
+                val amag2 = jointState.get(j, 0).magnitude2
+                if (amag2 > 0) {
                     labels.add(j)
-                    probs.add(a.magnitude2 + probs.last())
+                    probs.add(amag2 + probs.last())
                 }
             }
             val r = Random.nextDouble()
@@ -166,7 +158,7 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
             val collapseState = labels[index]
             println("MeasAll: ${allssket[collapseState]}")
             jointState = CMatrix(jointStateSize, 1).apply {
-                set(collapseState, 0, 1.0, 0.0)
+                put(collapseState, 0, 1.0)
             }
             hasMeasGate = true
             0
@@ -174,13 +166,11 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
         "MEASONE" -> {
             val i = readInt()
             jointState = reduceOps() * jointState
-            reversedNewOps = mutableListOf(GlobalScope.async { IN2 })
+            reversedNewOps = mutableListOf(scope.async { IN2 })
             var prob = 0.0
-            val a = CNum()
             for (j in 0 until jointStateSize) {
                 if (allss[j][i] == '0') {
-                    jointState.get(j, 0, a)
-                    prob += a.magnitude2
+                    prob += jointState.get(j, 0).magnitude2
                 }
             }
             val c = if (Random.nextDouble() < prob) '0' else {
@@ -190,10 +180,10 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
             println("MeasOne: Qubit #$i is |$c>")
             for (j in 0 until jointStateSize) {
                 if (allss[j][i] != c) {
-                    jointState.set(j, 0, 0.0, 0.0)
+                    jointState.put(j, 0, 0.0, 0.0)
                 }
             }
-            COps.scale(1.0 / sqrt(prob), 0.0, jointState)
+            jointState.muli(1.0 / sqrt(prob))
             hasMeasGate = true
             0
         }
@@ -215,6 +205,6 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
         }
         println("\nFinal state: ")
         println("Init ${allssket[0]}")
-        (opMatrix * jointState).printFancy2(allssket = allssket)
+        (opMatrix * jointState).printFancy(allssket)
     }
 }

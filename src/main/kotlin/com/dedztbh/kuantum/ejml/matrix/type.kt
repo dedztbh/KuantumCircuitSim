@@ -1,4 +1,4 @@
-package matrix
+package com.dedztbh.kuantum.ejml.matrix
 
 import org.ejml.data.Complex_F64
 import org.ejml.data.ZMatrixRMaj
