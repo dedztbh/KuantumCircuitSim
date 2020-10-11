@@ -26,7 +26,7 @@ infix fun CMatrix.kron(B: CMatrix) = CMatrix(rows * B.rows, columns * B.columns)
                 var r = ibrow
                 for (rowB in 0 until B.rows) {
                     // r = ibrow + rowB
-                    C.put(r++, c, a * (B.get(rowB, colB)))
+                    C.put(r++, c, a.mul(B.get(rowB, colB)))
                 }
                 ++c
             }
@@ -49,5 +49,3 @@ val CNum.magnitude2
         val i = imag()
         r * r + i * i
     }
-
-inline operator fun CNum.times(B: CNum): CNum = mul(B)
