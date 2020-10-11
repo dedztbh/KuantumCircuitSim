@@ -9,7 +9,7 @@ Another 15-459 Assignment(-ish).
 There are 2 versions with identical usage implemented with different libraries:    
 - EJML version (Default): No native dependencies, super lightweight, good for small input
 - JBLAS version: Accelerated with BLAS, good for big input (see [jblas_dev](https://github.com/DEDZTBH/KuantumCircuitSim/tree/jblas_dev) branch)
-    - JBLAS comes with default BLAS library for major OS's so it works right out of the box. For even better performance, you can also build JBLAS with custom BLAS library and put the library file(s) under library load path (for example, the same directory as the jar file). See [JBLAS github page](https://github.com/jblas-project/jblas) for more detail.
+    - JBLAS comes with default BLAS library for major OS's so it works right out of the box. For extreme performance, you can build JBLAS with custom BLAS library (like OpenBlas, ATLAS, cuBLAS) and put the library file(s) under library load path (for example, current working directory). See [JBLAS github page](https://github.com/jblas-project/jblas) for more detail.
     
 ### Table of Contents
 - [KuantumCircuitSim](#kuantumcircuitsim)
