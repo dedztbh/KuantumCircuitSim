@@ -10,7 +10,7 @@ import java.io.File
  */
 
 fun main(args: Array<String>) {
-    val parser = ArgParser("java -jar KuantumCircuitSim.jar")
+    val parser = ArgParser("java -jar Kuantum.jar")
     val config = Config(parser)
     parser.parse(args)
 

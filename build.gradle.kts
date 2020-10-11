@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 group = "com.dedztbh"
-version = "1.4.2"
+version = "1.4.3-ejml"
 
 val ejmlVersion = "0.39"
 
@@ -45,7 +45,7 @@ tasks.withType<KotlinCompile> {
 
 tasks {
     named<ShadowJar>("shadowJar") {
-        archiveBaseName.set("kuantum_circuit_sim")
+        archiveBaseName.set("Kuantum")
         mergeServiceFiles()
         manifest {
             attributes(mapOf("Main-Class" to "MainKt"))

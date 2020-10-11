@@ -38,8 +38,8 @@ infix fun CMatrix.kron(B: CMatrix) = CMatrix(numRows * B.numRows, numCols * B.nu
 /**
  * Convenient pure ops
  */
-operator fun CMatrix.plus(B: CMatrix) =
+inline operator fun CMatrix.plus(B: CMatrix) =
     CMatrix(numRows, numCols).also { COps.add(this, B, it) }
 
-operator fun CMatrix.times(B: CMatrix) =
+inline operator fun CMatrix.times(B: CMatrix) =
     CMatrix(numRows, B.numCols).also { COps.mult(this, B, it) }
