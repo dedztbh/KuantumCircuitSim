@@ -7,8 +7,8 @@ Quantum Computing is no coin-flipping!
 Another 15-459 Assignment(-ish).
 
 There are 2 versions with identical usage implemented with different libraries:    
-- EJML version: No native dependencies, super lightweight, good for small input
-- JBLAS version: Accelerated with BLAS, good for big input
+- EJML version: No native dependencies, super lightweight, good for small input (small N, like <4)
+- JBLAS version: Accelerated with BLAS, good for big input (big N)
     - JBLAS comes with default BLAS library for major OS's so it works right out of the box. For extreme performance, you can build JBLAS with custom BLAS library (like OpenBlas, ATLAS, cuBLAS) and put the library file(s) under library load path (for example, current working directory). See [JBLAS github page](https://github.com/jblas-project/jblas) for more detail.
     
 ### Table of Contents
@@ -32,13 +32,16 @@ There are 2 versions with identical usage implemented with different libraries:
 Of course, it says "Quantum Circuit Simulator"! See below for all supported gates and operations, including measurement!
 
 #### N-Qubit System
-You can use any number of qubits you want! Just make sure your computer is powerful enough if N is large. Time complexity is exponential on classical computers!
+You can use any number of qubits you want! Just make sure your computer is powerful enough if N is large. Time/Space complexity is exponential on classical computers!
 
 #### Generate Circuit Matrix
 The power of Linear Algebra! You can save the matrix after the simulation. Next time, just load it and one matrix multiplication gets you the result of running the entire circuit!
 
 #### Parallelism
-CPU0 is not alone! Concurrent command processing provides significantly performance boost on multi-core machines, especially for big N and large number of commands! (Sequential implementation is better for small input though)
+CPU0 is not alone! Concurrent command processing provides significantly performance boost on multi-core machines, especially for big N and large number of commands!
+- Note that concurrent implementation isn't always faster than sequential (with -s flag). Sequential is often faster in scenarios such as:
+    - Small N (like <4)
+    - (BLAS version) Using concurrent BLAS library (like OpenBlas)
 
 #### Acceleration with BLAS
 Now with JBLAS! EJML is great for small matrices but for not big ones (matrices have size 2^N x 2^N). Thus I added a JBLAS version that uses hardware-optimized BLAS library and can really speed things up!
@@ -102,7 +105,7 @@ Commands are case-insensitive.
 - Rot i deg
     + Rotate qubit counterclockwise by degree, not rad
 - Measure n
-    + Measures all qubit state n times in standard basis and print results
+    + "Magically" measures all qubit state n times in standard basis and print results
     + Will not change qubit state or circuit matrix
     + Only works when using Tester
     + Not saved in circuit matrix
