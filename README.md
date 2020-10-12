@@ -41,7 +41,7 @@ The power of Linear Algebra! You can save the matrix after the simulation. Next 
 CPU0 is not alone! Concurrent command processing provides significantly performance boost on multi-core machines, especially for big N and large number of commands!
 - Note that concurrent implementation isn't always faster than sequential (with -s flag). Sequential is often faster in scenarios such as:
     - Small N (like <4)
-    - (BLAS version) Using concurrent BLAS library (like OpenBlas)
+    - Intensive use of multiple core causes thermal throttling (like when I run JBLAS version on my laptop)
 
 #### Acceleration with BLAS
 Now with JBLAS! EJML is great for small matrices but for not big ones (matrices have size 2^N x 2^N). Thus I added a JBLAS version that uses hardware-optimized BLAS library and can really speed things up!
