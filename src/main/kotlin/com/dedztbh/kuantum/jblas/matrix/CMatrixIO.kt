@@ -33,7 +33,7 @@ fun CMatrix.toStringFancy(
             s.append(get(i, j))
             if (j < columns - 1) s.append(", ")
         }
-        if (i < rows - 1) s.append("\n")
+        s.append("\n")
     }
     return s.toString()
 }
@@ -48,6 +48,6 @@ fun CMatrix.printFancy(
             print(get(i, j))
             if (j < columns - 1) print(", ")
         }
-        if (i < rows - 1) print("\n")
+        println()
     }
 }.flush()

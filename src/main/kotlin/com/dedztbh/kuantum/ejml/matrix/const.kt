@@ -1,12 +1,11 @@
 package com.dedztbh.kuantum.ejml.matrix
 
+import com.dedztbh.kuantum.common.matrix.HALF_AMPL
+
 /**
  * Created by DEDZTBH on 2020/09/25.
  * Project KuantumCircuitSim
  */
-
-/** 2^(-1/2) */
-const val HALF_AMPL = 0.70710678118654757273731092936941422522068023681640625
 
 /** Don't change these constant matrices! */
 val NOT = CMatrix(

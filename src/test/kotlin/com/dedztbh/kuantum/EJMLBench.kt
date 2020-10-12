@@ -1,3 +1,5 @@
+package com.dedztbh.kuantum
+
 import org.ejml.data.CMatrixRMaj
 import org.ejml.data.Complex_F32
 import org.ejml.data.Complex_F64

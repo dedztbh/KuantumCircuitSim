@@ -1,6 +1,6 @@
 package com.dedztbh.kuantum.jblas
 
-import com.dedztbh.kuantum.common.main
+import com.dedztbh.kuantum.common.commonMain
 import org.jblas.util.Logger
 
 /**
@@ -10,5 +10,5 @@ import org.jblas.util.Logger
 
 fun main(args: Array<String>) {
     Logger.getLogger().setLevel(Logger.WARNING)
-    main(args, "jblas")
+    commonMain(args, "jblas")
 }

@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 group = "com.dedztbh"
-version = "1.4.4"
+version = "1.4.5"
 
 val projectRoot = "${group}.kuantum"
 val projectRootExclude = "/${projectRoot.replace('.', '/')}"
@@ -52,10 +52,10 @@ tasks {
     register("shadowJarEjml", ShadowJar::class) {
         archiveBaseName.set("Kuantum-ejml")
         from(sourceSets.main.get().output)
-        configurations.add(project.configurations.runtime.get())
-        configurations.add(project.configurations.implementation.get().apply {
-            isCanBeResolved = true
-        })
+        configurations = listOf(
+            project.configurations.runtime.get(),
+            project.configurations.runtimeClasspath.get()
+        )
         mergeServiceFiles()
         manifest {
             attributes(mapOf("Main-Class" to "${projectRoot}.ejml.MainKt"))
@@ -70,10 +70,10 @@ tasks {
     register("shadowJarJBLAS", ShadowJar::class) {
         archiveBaseName.set("Kuantum-jblas")
         from(sourceSets.main.get().output)
-        configurations.add(project.configurations.runtime.get())
-        configurations.add(project.configurations.implementation.get().apply {
-            isCanBeResolved = true
-        })
+        configurations = listOf(
+            project.configurations.runtime.get(),
+            project.configurations.runtimeClasspath.get()
+        )
         mergeServiceFiles()
         manifest {
             attributes(mapOf("Main-Class" to "${projectRoot}.jblas.MainKt"))

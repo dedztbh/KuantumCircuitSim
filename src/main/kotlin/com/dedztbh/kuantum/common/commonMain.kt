@@ -10,7 +10,7 @@ import java.io.File
  * Project KuantumCircuitSim
  */
 
-fun main(args: Array<String>, lib: String) {
+fun commonMain(args: Array<String>, lib: String) {
     val parser = ArgParser(CMD)
     val config = Config(parser)
     parser.parse(args)
