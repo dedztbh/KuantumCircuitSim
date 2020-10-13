@@ -1,5 +1,8 @@
 # KuantumCircuitSim
 
+![EPR](https://raw.githubusercontent.com/DEDZTBH/KuantumCircuitSim/master/EPR.gif)
+<sub>Making an EPR pair</sub>
+
 A Fast & Lightweight Quantum Circuit Simulator & Analyzer implemented in Kotlin.
 
 Quantum Computing is no coin-flipping!
