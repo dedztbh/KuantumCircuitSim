@@ -23,7 +23,10 @@ fun getJointState(initState: String, jointStateSize: Int) =
 
 class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
     /** 2^N by 1 column vector */
+    @JvmField
     var jointState = getJointState(config.init_state, jointStateSize)
+
+    @JvmField
     var hasMeasGate = false
 
     override suspend fun runCmd(cmd: String) = when (cmd) {
@@ -114,7 +117,10 @@ class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
 
 class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
     /** 2^N by 1 column vector */
+    @JvmField
     var jointState = getJointState(config.init_state, jointStateSize)
+
+    @JvmField
     var hasMeasGate = false
 
     override suspend fun runCmd(cmd: String) = when (cmd) {

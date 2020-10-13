@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 group = "com.dedztbh"
-version = "1.4.5"
+version = "1.4.6"
 
 val projectRoot = "${group}.kuantum"
 val projectRootExclude = "/${projectRoot.replace('.', '/')}"
@@ -20,14 +20,6 @@ repositories {
     maven("https://jitpack.io")
 }
 
-kotlin {
-    sourceSets {
-        dependencies {
-            implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3")
-        }
-    }
-}
-
 dependencies {
     implementation("org.ejml:ejml-core:${ejmlVersion}")
     implementation("org.ejml:ejml-zdense:${ejmlVersion}")
@@ -36,6 +28,7 @@ dependencies {
     implementation("com.github.cvb941:kotlin-parallel-operations:1.3")
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.11.1")
     implementation("org.slf4j:slf4j-nop:1.7.30")
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3")
     testImplementation("org.ejml:ejml-cdense:${ejmlVersion}")
 }
 

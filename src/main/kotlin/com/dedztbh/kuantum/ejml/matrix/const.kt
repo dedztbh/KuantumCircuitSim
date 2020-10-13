@@ -1,6 +1,7 @@
 package com.dedztbh.kuantum.ejml.matrix
 
 import com.dedztbh.kuantum.common.matrix.HALF_AMPL
+import org.ejml.data.ZMatrixRMaj
 
 /**
  * Created by DEDZTBH on 2020/09/25.
@@ -8,59 +9,86 @@ import com.dedztbh.kuantum.common.matrix.HALF_AMPL
  */
 
 /** Don't change these constant matrices! */
-val NOT = CMatrix(
+@JvmField
+val NOT: ZMatrixRMaj = CMatrix(
     arrayOf(
         doubleArrayOf(0.0, 0.0, 1.0, 0.0),
         doubleArrayOf(1.0, 0.0, 0.0, 0.0)
     )
 )
-val H = CMatrix(
+
+@JvmField
+val H: ZMatrixRMaj = CMatrix(
     arrayOf(
         doubleArrayOf(HALF_AMPL, 0.0, HALF_AMPL, 0.0),
         doubleArrayOf(HALF_AMPL, 0.0, -HALF_AMPL, 0.0)
     )
 )
-val I1 = COps.identity(1)
-val I2 = COps.identity(2)
 
-val KET0 = CMatrix(arrayOf(doubleArrayOf(1.0, 0.0), doubleArrayOf(0.0, 0.0)))
-val KET1 = CMatrix(arrayOf(doubleArrayOf(0.0, 0.0), doubleArrayOf(1.0, 0.0)))
+@JvmField
+val I1: ZMatrixRMaj = COps.identity(1)
 
-val KETBRA0 = COps.diag(1.0, 0.0, 0.0, 0.0)
-val KETBRA1 = COps.diag(0.0, 0.0, 1.0, 0.0)
-val SQRT_NOT = CMatrix(
+@JvmField
+val I2: ZMatrixRMaj = COps.identity(2)
+
+@JvmField
+val KET0: ZMatrixRMaj = CMatrix(arrayOf(doubleArrayOf(1.0, 0.0), doubleArrayOf(0.0, 0.0)))
+
+@JvmField
+val KET1: ZMatrixRMaj = CMatrix(arrayOf(doubleArrayOf(0.0, 0.0), doubleArrayOf(1.0, 0.0)))
+
+@JvmField
+val KETBRA0: ZMatrixRMaj = COps.diag(1.0, 0.0, 0.0, 0.0)
+
+@JvmField
+val KETBRA1: ZMatrixRMaj = COps.diag(0.0, 0.0, 1.0, 0.0)
+
+@JvmField
+val SQRT_NOT: ZMatrixRMaj = CMatrix(
     arrayOf(
         doubleArrayOf(0.5, 0.5, 0.5, -0.5),
         doubleArrayOf(0.5, -0.5, 0.5, 0.5),
     )
 )
-val SQRT_NOT_DAG = CMatrix(2, 2).also {
+
+@JvmField
+val SQRT_NOT_DAG: ZMatrixRMaj = CMatrix(2, 2).also {
     COps.transposeConjugate(SQRT_NOT, it)
 }
-val Y = CMatrix(
+
+@JvmField
+val Y: ZMatrixRMaj = CMatrix(
     arrayOf(
         doubleArrayOf(0.0, 0.0, 0.0, -1.0),
         doubleArrayOf(0.0, 1.0, 0.0, 0.0),
     )
 )
-val Z = CMatrix(
+
+@JvmField
+val Z: ZMatrixRMaj = CMatrix(
     arrayOf(
         doubleArrayOf(1.0, 0.0, 0.0, 0.0),
         doubleArrayOf(0.0, 0.0, -1.0, 0.0),
     )
 )
-val S = CMatrix(
+
+@JvmField
+val S: ZMatrixRMaj = CMatrix(
     arrayOf(
         doubleArrayOf(1.0, 0.0, 0.0, 0.0),
         doubleArrayOf(0.0, 0.0, 0.0, 1.0),
     )
 )
-val T = CMatrix(
+
+@JvmField
+val T: ZMatrixRMaj = CMatrix(
     arrayOf(
         doubleArrayOf(1.0, 0.0, 0.0, 0.0),
         doubleArrayOf(0.0, 0.0, HALF_AMPL, HALF_AMPL),
     )
 )
-val TDag = CMatrix(2, 2).also {
+
+@JvmField
+val TDag: ZMatrixRMaj = CMatrix(2, 2).also {
     COps.transposeConjugate(T, it)
 }
