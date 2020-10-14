@@ -95,3 +95,16 @@ val Y: ComplexDoubleMatrix = CMatrix(
     0.0, 1.0, 0.0, 0.0
 ).transpose()
 
+fun map0Ctrl(cmd: String) = when (cmd) {
+    "NOT" -> NOT
+    "HADAMARD", "H" -> H
+    "CNOT" -> NOT
+    "Y" -> Y
+    "Z" -> Z
+    "S" -> S
+    "T" -> T
+    "TDAG" -> TDag
+    "SQRTNOT" -> SQRT_NOT
+    "SQRTNOTDAG" -> SQRT_NOT_DAG
+    else -> null
+}

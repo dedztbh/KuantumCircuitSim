@@ -3,6 +3,7 @@ package com.dedztbh.kuantum.jblas.operator
 import com.dedztbh.kuantum.common.Config
 import com.dedztbh.kuantum.jblas.matrix.*
 import com.lukaskusik.coroutines.transformations.map.mapParallel
+import com.lukaskusik.coroutines.transformations.reduce.reduceParallel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 
@@ -17,11 +18,10 @@ class AllInit(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
         println("\nFinal states: ")
         alls.forEachIndexed { idx, arr ->
             println("Init ${allssket[idx]}")
-            val it = arr.iterator()
-            var jointState = if (it.next() == 0) KET0 else KET1
-            it.forEachRemaining { i ->
-                jointState = jointState kron (if (i == 0) KET0 else KET1)
-            }
+            val jointState =
+                arr.map { if (it == 0) KET0 else KET1 }
+                    .asIterable()
+                    .reduceParallel(sqrtN) { a, b -> a kron b }
             (opMatrix * jointState).printFancy(allssket)
             println()
         }
@@ -34,11 +34,10 @@ class PAllInit(config: Config, scope: CoroutineScope) : PTFinder(config, scope) 
         println("\nFinal states: ")
         alls.mapParallel { arr ->
             scope.async {
-                val it = arr.iterator()
-                var jointState = if (it.next() == 0) KET0 else KET1
-                it.forEachRemaining { i ->
-                    jointState = jointState kron (if (i == 0) KET0 else KET1)
-                }
+                val jointState =
+                    arr.mapParallel { if (it == 0) KET0 else KET1 }
+                        .asIterable()
+                        .reduceParallel(sqrtN) { a, b -> a kron b }
                 opMatrix * jointState
             }
         }.forEachIndexed { i, mat ->

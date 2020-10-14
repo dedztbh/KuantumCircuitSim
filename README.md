@@ -82,47 +82,52 @@ Tester: Similar to TFinder but also run |00..0> (or custom initial state with -i
 AllInit: Similar to TFinder but also run every possible initial states (2^N of them) through circuit and print results.
 
 ## Commands
-i, j, k are indicies of qubit. (0-indexed, left-to-right)
+i, j, k are indices of qubit. (0-indexed, left-to-right)
 
 In the input file, each command should be separated by new line or space.
 
 Commands are case-insensitive.
 
+##### Single-Qubit Gates
 - Not i
 - Hadamard i
     + You can also use "H" instead of "Hadamard"
-- CNot i j
-- Swap i j
-- CCNot i j k
-- CSwap i j k
 - Y i
 - Z i
-- CZ i j
-    + Controlled Z gate
 - S i
 - T i
 - TDag i
 - SqrtNot i
 - SqrtNotDag i
-- SqrtSwap i j
-    + Not implemented yet
 - Rot i deg
     + Rotate qubit counterclockwise by degree, not rad
+
+##### Parallel Mode
+You can enclose the above single-qubit gates that can run in parallel between "ParStart" and "ParEnd" commands. This can speed up the simulation a lot. Make sure you are using only above single-qubit gates and no two gates are acting on the same qubit.
+
+##### Multi-Qubit Gates
+- CNot i j
+- Swap i j
+- CZ i j
+    + Controlled Z gate
+- SqrtSwap i j
+    + Not implemented yet
+- CCNot i j k
+- CSwap i j k
+
+##### Measurement (Only works when using Tester)
 - Measure n
     + "Magically" measures all qubit state n times in standard basis and print results
     + Will not change qubit state or circuit matrix
-    + Only works when using Tester
     + Not saved in circuit matrix
 - MeasAll
     + Measure all qubits in standard basis and print measure result
     + Will cause qubit state to collapse
     + Will make circuit matrix unavailable to print or save
-    + Only works when using Tester
 - MeasOne i
     + Measure one qubits in standard basis and print measure result
     + Will cause qubit state to collapse
     + Will make circuit matrix unavailable to print or save
-    + Only works when using Tester
     
 ## Note
 

@@ -92,3 +92,17 @@ val T: ZMatrixRMaj = CMatrix(
 val TDag: ZMatrixRMaj = CMatrix(2, 2).also {
     COps.transposeConjugate(T, it)
 }
+
+fun map0Ctrl(cmd: String) = when (cmd) {
+    "NOT" -> NOT
+    "HADAMARD", "H" -> H
+    "CNOT" -> NOT
+    "Y" -> Y
+    "Z" -> Z
+    "S" -> S
+    "T" -> T
+    "TDAG" -> TDag
+    "SQRTNOT" -> SQRT_NOT
+    "SQRTNOTDAG" -> SQRT_NOT_DAG
+    else -> null
+}
