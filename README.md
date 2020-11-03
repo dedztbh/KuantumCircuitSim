@@ -53,7 +53,7 @@ Now with JBLAS! EJML is great for small matrices but for not big ones (matrices 
 ## Usage
 
 ```
-Usage: java -jar KuantumCircuitSim.jar options_list
+Usage: java -jar Kuantum.jar options_list
 Arguments: 
     input -> Input file { String }
     operator -> Operator name { String }
@@ -64,7 +64,8 @@ Options:
     --no_t, -q [false] -> Do not print circuit matrix in commandline after simulation if present 
     --sequential, -s [false] -> Use sequential instead of concurrent implementation if present 
     --init_state, -i [] -> Read custom initial joint state from csv if specified { String }
-    --binary_matrix, -b [false] -> Use binary format instead of csv for read/save circuit matrix if present (EJML version only)
+    --binary_matrix, -b [false] -> Use binary format instead of csv for read/save circuit matrix if present (EJML version only) 
+    --disable_cache, -d [false] -> Disable cache to save memory (same gates will need to be recomputed every time) 
     --help, -h -> Usage info 
 ```
 
@@ -99,19 +100,24 @@ Commands are case-insensitive.
 - TDag i
 - SqrtNot i
 - SqrtNotDag i
-- Rot i deg
-    + Rotate qubit counterclockwise by degree, not rad
+- Rot i angle
+    + Rotate qubit counterclockwise by angle (in radian)
+- R i phi
+    + Phase shift by phi (mapping |1> to e^(i*phi)|1>)
 
 ##### Parallel Mode
 You can enclose the above single-qubit gates that can run in parallel between "ParStart" and "ParEnd" commands. This can speed up the simulation a lot. Make sure you are using only above single-qubit gates and no two gates are acting on the same qubit.
 
 ##### Multi-Qubit Gates
+Note: i controls j (and k, if present)
 - CNot i j
 - Swap i j
 - CZ i j
     + Controlled Z gate
 - SqrtSwap i j
     + Not implemented yet
+- CR i j phi
+    + Controlled phase shift
 - CCNot i j k
 - CSwap i j k
 

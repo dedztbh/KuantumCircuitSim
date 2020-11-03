@@ -6,7 +6,10 @@ import com.lukaskusik.coroutines.transformations.reduce.reduceParallel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.roundToInt
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * Created by DEDZTBH on 2020/09/22.
@@ -48,11 +51,14 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
     @JvmField
     val IKronTable = (0..N).scan(I1) { it, _ -> it kron I2 }.toTypedArray()
 
-    open fun <K, V> getHashMap(): MutableMap<K, V> = HashMap()
+    @JvmField
+    val cacheEnabled = !config.disable_cache
+
+    open fun <K, V> getHashMap(): MutableMap<K, V> = if (cacheEnabled) HashMap() else TODOMap()
 
     @JvmField
     val matrix0CtrlCache: Array<MutableMap<CMatrix, CMatrix>> = Array(N) { getHashMap() }
-    fun get0CtrlMatrix(i: Int, mat: CMatrix, cache: Boolean = true): CMatrix {
+    fun get0CtrlMatrix(i: Int, mat: CMatrix, cache: Boolean = cacheEnabled): CMatrix {
         if (cache) matrix0CtrlCache[i][mat]?.let { return it }
         val res = IKronTable[i] kron mat kron IKronTable[N - i - 1]
         if (cache) matrix0CtrlCache[i][mat] = res
@@ -63,8 +69,8 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
      * http://www.sakkaris.com/tutorials/quantum_control_gates.html */
     @JvmField
     val matrix1CtrlCache: Array<Array<MutableMap<CMatrix, CMatrix>>> = Array(N) { Array(N) { getHashMap() } }
-    fun get1CtrlMatrix(i: Int, j: Int, mat: CMatrix): CMatrix {
-        matrix1CtrlCache[i][j][mat]?.let { return it }
+    fun get1CtrlMatrix(i: Int, j: Int, mat: CMatrix, cache: Boolean = cacheEnabled): CMatrix {
+        if (cache) matrix1CtrlCache[i][j][mat]?.let { return it }
         val res = get0CtrlMatrix(i, KETBRA0) + when {
             i < j -> IKronTable[i] kron KETBRA1 kron
                     IKronTable[j - i - 1] kron
@@ -74,7 +80,7 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
                     (KETBRA1 kron IKronTable[N - i - 1])
             else -> throw IllegalArgumentException("Control qubit is same as affected qubit")
         }
-        matrix1CtrlCache[i][j][mat] = res
+        if (cache) matrix1CtrlCache[i][j][mat] = res
         return res
     }
 
@@ -82,24 +88,23 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
     val ccnotCache: Array<Array<MutableMap<Int, CMatrix>>> = Array(N) { Array(N) { getHashMap() } }
     fun getCCNotMatrix(i: Int, j: Int, k: Int): CMatrix {
         /** using Sleator-Weinfurter construction */
-        ccnotCache[i][j][k]?.let { return it }
+        if (cacheEnabled) ccnotCache[i][j][k]?.let { return it }
         val cnotij = get1CtrlMatrix(i, j, NOT)
         val res = get1CtrlMatrix(i, k, SQRT_NOT) *
                 cnotij *
                 get1CtrlMatrix(j, k, SQRT_NOT_DAG) *
                 cnotij *
                 get1CtrlMatrix(j, k, SQRT_NOT)
-        ccnotCache[i][j][k] = res
+        if (cacheEnabled) ccnotCache[i][j][k] = res
         return res
     }
 
     @JvmField
     val rotCache: Array<MutableMap<Double, CMatrix>> = Array(N) { getHashMap() }
-    fun getRotMatrix(i: Int, d: Double): CMatrix {
-        rotCache[i][d]?.let { return it }
-        val rad = d * PI / 180.0
-        val sine = sin(rad)
-        val cosine = cos(rad)
+    fun getRotMatrix(i: Int, angle: Double): CMatrix {
+        if (cacheEnabled) rotCache[i][angle]?.let { return it }
+        val sine = sin(angle)
+        val cosine = cos(angle)
         val rotMat = CMatrix(
             arrayOf(
                 doubleArrayOf(cosine, 0.0, -sine, 0.0),
@@ -107,32 +112,47 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
             )
         )
         return get0CtrlMatrix(i, rotMat, false).also {
-            rotCache[i][d] = it
+            if (cacheEnabled) rotCache[i][angle] = it
+        }
+    }
+
+    @JvmField
+    val RCache: Array<MutableMap<Double, CMatrix>> = Array(N) { getHashMap() }
+    fun getRMatrix(i: Int, phi: Double): CMatrix {
+        if (cacheEnabled) RCache[i][phi]?.let { return it }
+        val RMat = CMatrix(
+            arrayOf(
+                doubleArrayOf(1.0, 0.0, 0.0, 0.0),
+                doubleArrayOf(0.0, 0.0, cos(phi), sin(phi))
+            )
+        )
+        return get0CtrlMatrix(i, RMat, false).also {
+            if (cacheEnabled) RCache[i][phi] = it
         }
     }
 
     @JvmField
     val swapCache: Array<MutableMap<Int, CMatrix>> = Array(N) { getHashMap() }
     fun getSwapMatrix(i: Int, j: Int): CMatrix {
-        swapCache[i][j]?.let { return it }
+        if (cacheEnabled) swapCache[i][j]?.let { return it }
         /** https://algassert.com/post/1717
          * Swap implemented with 3 CNots */
         val cnot0 = get1CtrlMatrix(i, j, NOT)
         return (cnot0 * get1CtrlMatrix(j, i, NOT) * cnot0).also {
-            swapCache[i][j] = it
+            if (cacheEnabled) swapCache[i][j] = it
         }
     }
 
     @JvmField
     val cswapCache: Array<Array<MutableMap<Int, CMatrix>>> = Array(N) { Array(N) { getHashMap() } }
     fun getCSwapMatrix(i: Int, j: Int, k: Int): CMatrix {
-        cswapCache[i][j][k]?.let { return it }
+        if (cacheEnabled) cswapCache[i][j][k]?.let { return it }
         /** https://quantumcomputing.stackexchange.com/
          * questions/9342/how-to-implement-a-fredkin
          * -gate-using-toffoli-and-cnots */
         val cnotkj = get1CtrlMatrix(k, j, NOT)
         return (cnotkj * getCCNotMatrix(i, j, k) * cnotkj).also {
-            cswapCache[i][j][k] = it
+            if (cacheEnabled) cswapCache[i][j][k] = it
         }
     }
 
@@ -169,8 +189,24 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
 //            "SQRTSWAP" -> {
 //                TODO: Implement SqrtSwap
 //            }
-                "ROT" -> getRotMatrix(i, readDouble())
+                "ROT" -> {
+                    val angle = readDouble()
+                    if (parallelMode) {
+                        parallelMatrices[i] = getRotMatrix(i, angle)
+                        return@checkParAndWhen
+                    }
+                    getRotMatrix(i, angle)
+                }
+                "R" -> {
+                    val phi = readDouble()
+                    if (parallelMode) {
+                        parallelMatrices[i] = getRMatrix(i, phi)
+                        return@checkParAndWhen
+                    }
+                    getRMatrix(i, phi)
+                }
                 "CZ" -> get1CtrlMatrix(i, readInt(), Z)
+                "CR" -> get1CtrlMatrix(i, readInt(), getRMatrix(i, readDouble()), false)
                 else -> map0Ctrl(cmd).let {
                     if (it != null) {
                         if (parallelMode) {
@@ -215,7 +251,7 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
     @JvmField
     var reversedNewOps = mutableListOf(scope.async { opMatrix })
 
-    override fun <K, V> getHashMap(): MutableMap<K, V> = ConcurrentHashMap()
+    override fun <K, V> getHashMap(): MutableMap<K, V> = if (cacheEnabled) ConcurrentHashMap() else TODOMap()
 
     suspend inline fun checkParAndWhenConcurrent(cmd: String, block: () -> Unit) =
         when (cmd) {
@@ -268,16 +304,29 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
 //                      TODO: Implement SqrtSwap
 //                  }
                     "ROT" -> {
-                        val deg = readDouble()
+                        val angle = readDouble()
                         if (parallelMode) {
-                            parallelMatrices[i] = getRotMatrix(i, deg)
+                            parallelMatrices[i] = getRotMatrix(i, angle)
                             return@checkParAndWhenConcurrent
                         }
-                        async { getRotMatrix(i, deg) }
+                        async { getRotMatrix(i, angle) }
+                    }
+                    "R" -> {
+                        val phi = readDouble()
+                        if (parallelMode) {
+                            parallelMatrices[i] = getRMatrix(i, phi)
+                            return@checkParAndWhenConcurrent
+                        }
+                        async { getRMatrix(i, phi) }
                     }
                     "CZ" -> {
                         val j = readInt()
                         async { get1CtrlMatrix(i, j, Z) }
+                    }
+                    "CR" -> {
+                        val j = readInt()
+                        val phi = readDouble()
+                        async { get1CtrlMatrix(i, j, getRMatrix(i, phi), false) }
                     }
                     else -> map0Ctrl(cmd).let {
                         if (it != null) {

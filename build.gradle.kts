@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 group = "com.dedztbh"
-version = "1.4.7"
+version = "1.5.0"
 
 val projectRoot = "${group}.kuantum"
 val projectRootExclude = "/${projectRoot.replace('.', '/')}"
@@ -24,7 +24,7 @@ dependencies {
     implementation("org.ejml:ejml-core:${ejmlVersion}")
     implementation("org.ejml:ejml-zdense:${ejmlVersion}")
     implementation("org.jblas:jblas:${jblasVersion}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.0")
     implementation("com.github.cvb941:kotlin-parallel-operations:1.3")
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:0.11.1")
     implementation("org.slf4j:slf4j-nop:1.7.30")

@@ -49,4 +49,9 @@ class Config(parser: ArgParser) {
         shortName = "b",
         description = "Use binary format instead of csv for read/save circuit matrix if present (EJML version only)"
     ).default(false)
+    val disable_cache by parser.option(
+        ArgType.Boolean,
+        shortName = "d",
+        description = "Disable cache to save memory (same gates will need to be recomputed every time)"
+    ).default(false)
 }
