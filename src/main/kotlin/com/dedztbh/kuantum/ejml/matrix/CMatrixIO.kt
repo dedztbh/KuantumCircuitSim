@@ -3,8 +3,6 @@ package com.dedztbh.kuantum.ejml.matrix
 import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import com.github.doyaaaaaken.kotlincsv.client.CsvWriter
 import org.ejml.UtilEjml
-import org.ejml.data.MatrixSparse
-import org.ejml.data.MatrixType
 import org.ejml.ops.MatrixIO
 import java.io.*
 import java.text.DecimalFormat
@@ -13,26 +11,6 @@ import java.text.DecimalFormat
  * Created by DEDZTBH on 2020/09/27.
  * Project KuantumCircuitSim
  */
-
-fun getMatrixType(mat: CMatrix): String {
-    return if (mat.type == MatrixType.UNSPECIFIED) {
-        mat.javaClass.simpleName
-    } else {
-        mat.type.name
-    }
-}
-
-fun printTypeSize(out: PrintStream, mat: CMatrix) {
-    if (mat is MatrixSparse) {
-        val m = mat as MatrixSparse
-        out.println(
-            "Type = " + getMatrixType(mat) + " , rows = " + mat.getNumRows() +
-                    " , cols = " + mat.getNumCols() + " , nz_length = " + m.nonZeroLength
-        )
-    } else {
-        out.println("Type = " + getMatrixType(mat) + " , rows = " + mat.getNumRows() + " , cols = " + mat.getNumCols())
-    }
-}
 
 fun padSpace(builder: java.lang.StringBuilder, length: Int): String {
     builder.delete(0, builder.length)
@@ -89,7 +67,6 @@ fun CMatrix.printFancy2(
     out: PrintStream = System.out,
     length: Int = MatrixIO.DEFAULT_LENGTH,
 ) {
-//        printTypeSize(out, this)
     val format = DecimalFormat("#")
     val builder = StringBuilder(length)
     val cols = numCols

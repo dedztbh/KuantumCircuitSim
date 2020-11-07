@@ -54,7 +54,7 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
     @JvmField
     val cacheEnabled = !config.disable_cache
 
-    open fun <K, V> getHashMap(): MutableMap<K, V> = if (cacheEnabled) HashMap() else TODOMap()
+    open fun <K, V> getHashMap(): MutableMap<K, V> = if (cacheEnabled) HashMap() else BogusMap()
 
     @JvmField
     val matrix0CtrlCache: Array<MutableMap<CMatrix, CMatrix>> = Array(N) { getHashMap() }
@@ -78,7 +78,7 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
             i > j -> IKronTable[j] kron mat kron
                     IKronTable[i - j - 1] kron
                     (KETBRA1 kron IKronTable[N - i - 1])
-            else -> throw IllegalArgumentException("Control qubit is same as affected qubit")
+            else -> throw IllegalArgumentException("Control qubit is same as target qubit")
         }
         if (cache) matrix1CtrlCache[i][j][mat] = res
         return res
@@ -243,15 +243,18 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
 
 @JvmField
 val CONCURRENT_MATRIX = Runtime.getRuntime().availableProcessors().let {
-    it shl 9
+    it * 512
 }
+
+@JvmField
+val SQRT_CONCURRENT_MATRIX = sqrt(CONCURRENT_MATRIX.toDouble()).roundToInt()
 
 open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
 
     @JvmField
     var reversedNewOps = mutableListOf(scope.async { opMatrix })
 
-    override fun <K, V> getHashMap(): MutableMap<K, V> = if (cacheEnabled) ConcurrentHashMap() else TODOMap()
+    override fun <K, V> getHashMap(): MutableMap<K, V> = if (cacheEnabled) ConcurrentHashMap() else BogusMap()
 
     suspend inline fun checkParAndWhenConcurrent(cmd: String, block: () -> Unit) =
         when (cmd) {
@@ -341,7 +344,7 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
                     }
                 })
                 if (reversedNewOps.size >= CONCURRENT_MATRIX) {
-                    // We have enough matrices, do a reduction to prevent OOM
+                    // We have enough matrices, do a reduction
                     val newNewOps = reduceOps()
                     reversedNewOps = mutableListOf(async { newNewOps })
                 }
@@ -352,7 +355,8 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
 
     suspend fun reduceOps() =
         reversedNewOps.map { it.await() }
-            .reduceParallel { d1, d2 ->
+            .asIterable()
+            .reduceParallel(SQRT_CONCURRENT_MATRIX) { d1, d2 ->
                 d2 * d1
             }
 

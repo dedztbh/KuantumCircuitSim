@@ -25,21 +25,6 @@ fun loadCsv(fileName: String): CMatrix =
         }.transpose()
     }
 
-fun CMatrix.toStringFancy(
-    allssket: List<String>? = null
-): String {
-    val s = StringBuilder()
-    for (i in 0 until rows) {
-        allssket?.let { s.append("${it[i]}: ") }
-        for (j in 0 until columns) {
-            s.append(get(i, j))
-            if (j < columns - 1) s.append(", ")
-        }
-        s.append("\n")
-    }
-    return s.toString()
-}
-
 @JvmField
 val fmt = DecimalFormat("#.#########")
 fun CNum.toStringFancy(): String {

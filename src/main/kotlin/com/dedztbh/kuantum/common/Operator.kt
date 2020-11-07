@@ -8,7 +8,8 @@ import kotlinx.coroutines.CoroutineScope
  */
 
 /**
- * Children class must have a constructor that takes an common.Config object and a coroutine scope
+ * Children class must have a constructor that takes
+ * a @see com.dedztbh.kuantum.common.Config and a @see kotlinx.coroutines.CoroutineScope
  */
 interface Operator {
     suspend fun runCmd(cmd: String): Int
@@ -16,7 +17,6 @@ interface Operator {
     suspend fun done()
 
     companion object {
-        @JvmStatic
         fun get(config: Config, scope: CoroutineScope, lib: String) =
             Class.forName("com.dedztbh.kuantum.$lib.operator.${if (config.sequential) "" else "P"}${config.operator}")
                 .getDeclaredConstructor(Config::class.java, CoroutineScope::class.java)

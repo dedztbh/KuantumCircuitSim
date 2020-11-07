@@ -20,7 +20,6 @@ fun read(): String {
 
 fun readInt() = read().toInt()
 fun readDouble() = read().toDouble()
-fun readFloat() = read().toFloat()
 
 lateinit var reader: BufferedReader
 
@@ -44,25 +43,3 @@ fun allStates(n: Int) =
     Array(2.0.pow(n).toInt()) {
         List(n) { i -> (it shr i) and 1 }.asReversed()
     }
-
-
-/** Data Structure */
-class TODOMap<K, V> : MutableMap<K, V> {
-    override val size
-        get() = throw NotImplementedError()
-    override val entries
-        get() = throw NotImplementedError()
-    override val keys
-        get() = throw NotImplementedError()
-    override val values
-        get() = throw NotImplementedError()
-
-    override fun containsKey(key: K): Boolean = throw NotImplementedError()
-    override fun containsValue(value: V): Boolean = throw NotImplementedError()
-    override fun get(key: K): V? = throw NotImplementedError()
-    override fun isEmpty(): Boolean = throw NotImplementedError()
-    override fun clear() = throw NotImplementedError()
-    override fun put(key: K, value: V): V? = throw NotImplementedError()
-    override fun putAll(from: Map<out K, V>) = throw NotImplementedError()
-    override fun remove(key: K): V? = throw NotImplementedError()
-}
