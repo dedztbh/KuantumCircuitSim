@@ -109,7 +109,7 @@ Commands are case-insensitive.
 You can enclose the above single-qubit gates that can run in parallel between "ParStart" and "ParEnd" commands. This can speed up the simulation a lot. Make sure you are using only above single-qubit gates and no two gates are acting on the same qubit.
 
 ##### Multi-Qubit Gates
-Note: i controls j (and k, if present)
+Note: Control qubit(s) followed by target qubit(s)
 - CNot i j
 - Swap i j
 - CZ i j
@@ -124,7 +124,7 @@ Note: i controls j (and k, if present)
 ##### Measurement (Only works when using Tester)
 - Measure n
     + "Magically" measures all qubit state n times in standard basis and print results
-    + Will not change qubit state or circuit matrix
+    + Will NOT change qubit state or circuit matrix
     + Not saved in circuit matrix
 - MeasAll
     + Measure all qubits in standard basis and print measure result
