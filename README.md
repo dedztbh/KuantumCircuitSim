@@ -14,7 +14,7 @@ There are 2 versions with identical usage implemented with different libraries:
 - EJML version: No native dependencies, super lightweight, good for small input (small N, like <4)
 - JBLAS version: Accelerated with BLAS, good for big input (big N)
     - JBLAS comes with default BLAS library for major OS's so it works right out of the box. For extreme performance, you can build JBLAS with custom BLAS library (like OpenBlas, ATLAS, cuBLAS) and put the library file(s) under library load path (for example, current working directory). See [JBLAS github page](https://github.com/jblas-project/jblas) for more detail.
-    
+
 ### Table of Contents
 - [KuantumCircuitSim](#kuantumcircuitsim)
     - [Table of Contents](#table-of-contents)
@@ -30,6 +30,7 @@ There are 2 versions with identical usage implemented with different libraries:
   - [Note](#note)
     - [Notation](#notation)
     - [Matrix File Format](#matrix-file-format)
+    - [OutOfMemoryError](#outofmemoryerror)
 
 ## Features
 #### Simulate A Quantum Circuit
@@ -155,3 +156,7 @@ is stored in CSV file like
 0,-1,1,0
 ```
 (EJML version only) Alternatively, circuit matrix can be saved/loaded in Java binary format (with -b option). It might be faster to save/load but it is not human readable. In case you want to read it, it is a `org.ejml.data.ZMatrixRMaj`.
+
+### OutOfMemoryError
+
+If you encountered OOM, try giving JVM more memory (with JVM argument -Xmx) and/or try program arguments -d (disable cache) and -s (sequential mode).

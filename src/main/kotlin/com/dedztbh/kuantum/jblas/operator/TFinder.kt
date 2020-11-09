@@ -247,7 +247,7 @@ val CONCURRENT_MATRIX = Runtime.getRuntime().availableProcessors().let {
 }
 
 @JvmField
-val SQRT_CONCURRENT_MATRIX = sqrt(com.dedztbh.kuantum.ejml.operator.CONCURRENT_MATRIX.toDouble()).roundToInt()
+val SQRT_CONCURRENT_MATRIX = sqrt(CONCURRENT_MATRIX.toDouble()).roundToInt()
 
 open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
 
