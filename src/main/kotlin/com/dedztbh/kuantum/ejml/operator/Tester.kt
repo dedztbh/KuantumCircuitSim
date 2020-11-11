@@ -38,7 +38,7 @@ class Tester(config: Config, scope: CoroutineScope) : TFinder(config, scope) {
             val labels = mutableListOf<Int>()
             val a = CNum()
             for (j in 0 until jointStateSize) {
-                results.get(0, j, a)
+                results.get(j, 0, a)
                 if (a.magnitude2 > 0) {
                     labels.add(j)
                     probs.add(a.magnitude2 + probs.last())
@@ -138,7 +138,7 @@ class PTester(config: Config, scope: CoroutineScope) : PTFinder(config, scope) {
             val labels = mutableListOf<Int>()
             val a = CNum()
             for (j in 0 until jointStateSize) {
-                results.get(0, j, a)
+                results.get(j, 0, a)
                 if (a.magnitude2 > 0) {
                     labels.add(j)
                     probs.add(a.magnitude2 + probs.last())
