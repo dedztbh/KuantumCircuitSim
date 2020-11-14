@@ -1,4 +1,4 @@
-Rot 0 22.5
+Rot 0 1.0
 H 1
 CNot 1 2
 CNot 0 1

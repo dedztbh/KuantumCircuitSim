@@ -6,7 +6,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 group = "com.dedztbh"
-version = "1.5.3"
+version = "1.5.4"
 
 val projectRoot = "${group}.kuantum"
 val projectRootExclude = "/${projectRoot.replace('.', '/')}"

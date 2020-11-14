@@ -118,17 +118,19 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
         }
     }
 
+    /** Luckily, R_phi is symmetric */
+    fun baseRMatrix(phi: Double) = CMatrix(
+        2, 2,
+        1.0, 0.0, 0.0, 0.0,
+        0.0, 0.0, cos(phi), sin(phi)
+    )
+
+
     @JvmField
     val RCache: Array<MutableMap<Double, CMatrix>> = Array(N) { getHashMap() }
     fun getRMatrix(i: Int, phi: Double): CMatrix {
         if (cacheEnabled) RCache[i][phi]?.let { return it }
-        /** Luckily, R_phi is symmetric */
-        val RMat = CMatrix(
-            2, 2,
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, cos(phi), sin(phi)
-        )
-        return get0CtrlMatrix(i, RMat, false).also {
+        return get0CtrlMatrix(i, baseRMatrix(phi), false).also {
             if (cacheEnabled) RCache[i][phi] = it
         }
     }
@@ -199,7 +201,7 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
                     }
                     getRotMatrix(i, angle)
                 }
-                "R" -> {
+                "R", "U" -> {
                     val phi = readDouble()
                     if (parallelMode) {
                         parallelMatrices[i] = getRMatrix(i, phi)
@@ -208,7 +210,7 @@ open class TFinder(val config: Config, val scope: CoroutineScope) : Operator {
                     getRMatrix(i, phi)
                 }
                 "CZ" -> get1CtrlMatrix(i, readInt(), Z)
-                "CR" -> get1CtrlMatrix(i, readInt(), getRMatrix(i, readDouble()), false)
+                "CR", "CU" -> get1CtrlMatrix(i, readInt(), baseRMatrix(readDouble()), false)
                 else -> map0Ctrl(cmd).let {
                     if (it != null) {
                         if (parallelMode) {
@@ -313,7 +315,7 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
                         }
                         async { getRotMatrix(i, angle) }
                     }
-                    "R" -> {
+                    "R", "U" -> {
                         val phi = readDouble()
                         if (parallelMode) {
                             parallelMatrices[i] = getRMatrix(i, phi)
@@ -325,10 +327,10 @@ open class PTFinder(config: Config, scope: CoroutineScope) : TFinder(config, sco
                         val j = readInt()
                         async { get1CtrlMatrix(i, j, Z) }
                     }
-                    "CR" -> {
+                    "CR", "CU" -> {
                         val j = readInt()
                         val phi = readDouble()
-                        async { get1CtrlMatrix(i, j, getRMatrix(i, phi), false) }
+                        async { get1CtrlMatrix(i, j, baseRMatrix(phi), false) }
                     }
                     else -> map0Ctrl(cmd).let {
                         if (it != null) {

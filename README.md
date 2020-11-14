@@ -74,6 +74,8 @@ example: ```java -jar KuantumCircuitSim.jar example.txt Tester 3 -o output.csv -
 
 Where example.txt contains list of commands and circuit matrix (csv) will be stored to output.csv and initial state is read from init.csv
 
+Some examples for input command file, initial state (-i), and initial matrix (-m) are located in the example folder.
+
 ## Operators
 
 TFinder: Generate the circuit's matrix and print it.
@@ -103,8 +105,9 @@ Commands are case-insensitive.
 - SqrtNotDag i
 - Rot i angle
     + Rotate qubit counterclockwise by angle (in radian)
-- R i phi
+- U i phi
     + Phase shift by phi (mapping |1> to e^(i*phi)|1>)
+    + You can also use "R" instead of "U"
 
 ##### Parallel Mode
 You can enclose the above single-qubit gates that can run in parallel between "ParStart" and "ParEnd" commands. This can speed up the simulation a lot. Make sure you are using only above single-qubit gates and no two gates are acting on the same qubit.
@@ -117,8 +120,9 @@ Note: Control qubit(s) followed by target qubit(s)
     + Controlled Z gate
 - SqrtSwap i j
     + Not implemented yet
-- CR i j phi
+- CU i j phi
     + Controlled phase shift
+    + You can also use "CR" instead of "CU"
 - CCNot i j k
 - CSwap i j k
 
